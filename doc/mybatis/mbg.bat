@@ -1,0 +1,1 @@
+java -jar D:\MavenRepository\org\mybatis\generator\mybatis-generator-core\1.3.5\mybatis-generator-core-1.3.5.jar -configfile C:\Users\Administrator\IdeaProjects\testmvc2\doc\mybatis\generatorConfig.xml -overwrite
