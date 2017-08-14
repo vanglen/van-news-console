@@ -14,7 +14,6 @@
         <module>webapi</module>
         <module>model</module>
         <module>dao</module>
-        <module>common</module>
         <module>service</module>
     </modules>
 

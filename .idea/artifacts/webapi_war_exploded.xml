@@ -10,9 +10,7 @@
           <element id="archive" name="model-1.0-SNAPSHOT.jar">
             <element id="module-output" name="model" />
           </element>
-          <element id="archive" name="common-1.0-SNAPSHOT.jar">
-            <element id="module-output" name="common" />
-          </element>
+          <element id="library" level="project" name="Maven: cc.le.news:common:1.0-SNAPSHOT" />
           <element id="archive" name="dao-1.0-SNAPSHOT.jar">
             <element id="module-output" name="dao" />
           </element>

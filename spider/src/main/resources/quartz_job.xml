@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<job-scheduling-data
+        xmlns="http://www.quartz-scheduler.org/xml/JobSchedulingData"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.quartz-scheduler.org/xml/JobSchedulingData http://www.quartz-scheduler.org/xml/job_scheduling_data_1_8.xsd"
+        version="1.8">
+
+    <!--<schedule>-->
+    <!--<job>-->
+    <!--<name>ShuoKeJob</name>-->
+    <!--<group>ShuoKeJobGroup</group>-->
+    <!--<job-class>autohome.wz.job.ShuoKeJob</job-class>-->
+    <!--</job>-->
+    <!--<trigger>-->
+    <!--<cron>-->
+    <!--<name>ShuoKeJobTrigger</name>-->
+    <!--<job-name>ShuoKeJob</job-name>-->
+    <!--<job-group>ShuoKeJobGroup</job-group>-->
+    <!--<cron-expression>0 20 15 * * ?</cron-expression>-->
+    <!--</cron>-->
+    <!--</trigger>-->
+    <!--</schedule>-->
+
+    <!--<schedule>-->
+    <!--<job>-->
+    <!--<name>AutoClubJob</name>-->
+    <!--<group>AutoClubJobGroup</group>-->
+    <!--<job-class>autohome.wz.job.AutoClubJob</job-class>-->
+    <!--</job>-->
+    <!--<trigger>-->
+    <!--<cron>-->
+    <!--<name>AutoClubJobTrigger</name>-->
+    <!--<job-name>AutoClubJob</job-name>-->
+    <!--<job-group>AutoClubJobGroup</job-group>-->
+    <!--<cron-expression>0 40 19 * * ?</cron-expression>-->
+    <!--</cron>-->
+    <!--</trigger>-->
+    <!--</schedule>-->
+
+    <!--<schedule>-->
+    <!--<job>-->
+    <!--<name>AutoNewsJob</name>-->
+    <!--<group>AutoNewsJobGroup</group>-->
+    <!--<job-class>autohome.wz.job.AutoNewsJob</job-class>-->
+    <!--</job>-->
+    <!--<trigger>-->
+    <!--<cron>-->
+    <!--<name>AutoNewsJobTrigger</name>-->
+    <!--<job-name>AutoNewsJob</job-name>-->
+    <!--<job-group>AutoNewsJobGroup</job-group>-->
+    <!--<cron-expression>0 20 20 * * ?</cron-expression>-->
+    <!--</cron>-->
+    <!--</trigger>-->
+    <!--</schedule>-->
+
+    <!--<schedule>-->
+    <!--<job>-->
+    <!--<name>YouChuangJob</name>-->
+    <!--<group>YouChuangJobGroup</group>-->
+    <!--<job-class>autohome.wz.job.YouChuangJob</job-class>-->
+    <!--</job>-->
+    <!--<trigger>-->
+    <!--<cron>-->
+    <!--<name>YouChuangJobTrigger</name>-->
+    <!--<job-name>YouChuangJob</job-name>-->
+    <!--<job-group>YouChuangJobGroup</job-group>-->
+    <!--<cron-expression>0 40 16 * * ?</cron-expression>-->
+    <!--</cron>-->
+    <!--</trigger>-->
+    <!--</schedule>-->
+
+    <!--<schedule>-->
+    <!--<job>-->
+    <!--<name>HeadLineCommentJob</name>-->
+    <!--<group>HeadLineCommentJobGroup</group>-->
+    <!--<job-class>autohome.wz.job.HeadLineCommentJob</job-class>-->
+    <!--</job>-->
+    <!--<trigger>-->
+    <!--<cron>-->
+    <!--<name>HeadLineCommentJobTrigger</name>-->
+    <!--<job-name>HeadLineCommentJob</job-name>-->
+    <!--<job-group>HeadLineCommentJobGroup</job-group>-->
+    <!--<cron-expression>0/3 * * * * ?</cron-expression>-->
+    <!--</cron>-->
+    <!--</trigger>-->
+    <!--</schedule>-->
+
+    <schedule>
+        <job>
+            <name>TestJob</name>
+            <group>TestJobGroup</group>
+            <job-class>spider.job.TestJob</job-class>
+        </job>
+        <trigger>
+            <cron>
+                <name>TestJobTrigger</name>
+                <job-name>TestJob</job-name>
+                <job-group>TestJobGroup</job-group>
+                <cron-expression>0/10 * * * * ?</cron-expression>
+            </cron>
+        </trigger>
+    </schedule>
+
+</job-scheduling-data>
