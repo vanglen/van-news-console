@@ -9,7 +9,7 @@
 
     <context id="DB2Tables" targetRuntime="MyBatis3" defaultModelType="flat">
         <jdbcConnection driverClass="com.mysql.jdbc.Driver"
-                        connectionURL="jdbc:mysql://localhost:3306/test?serverTimezone=UTC"
+                        connectionURL="jdbc:mysql://localhost:3306/van_news?serverTimezone=UTC"
                         userId="root"
                         password="root">
         </jdbcConnection>
@@ -18,21 +18,21 @@
             <property name="forceBigDecimals" value="false"/>
         </javaTypeResolver>
 
-        <javaModelGenerator targetPackage="model.user" targetProject="C:\Users\Vanglen\IdeaProjects\console\model\src\main\java">
+        <javaModelGenerator targetPackage="model.user" targetProject="D:\Work\le-news\src\van-news-console\model\src\main\java">
             <property name="enableSubPackages" value="true"/>
             <property name="trimStrings" value="true"/>
         </javaModelGenerator>
 
-        <sqlMapGenerator targetPackage="dao.mapperxml" targetProject="C:\Users\Vanglen\IdeaProjects\console\dao\src\main\resources">
+        <sqlMapGenerator targetPackage="dao.mapperxml" targetProject="D:\Work\le-news\src\van-news-console\dao\src\main\resources">
             <property name="enableSubPackages" value="true"/>
         </sqlMapGenerator>
 
         <javaClientGenerator type="XMLMAPPER" targetPackage="dao.mapper"
-                             targetProject="C:\Users\Vanglen\IdeaProjects\console\dao\src\main\java">
+                             targetProject="D:\Work\le-news\src\van-news-console\dao\src\main\java">
             <property name="enableSubPackages" value="true"/>
         </javaClientGenerator>
 
-        <table tableName="t_user">
+        <table tableName="t_comment">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
 
