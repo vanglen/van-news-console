@@ -27,7 +27,6 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="common" />
     <orderEntry type="module" module-name="model" />
-    <orderEntry type="library" name="Maven: cc.le.news:common:1.0-SNAPSHOT" level="project" />
     <orderEntry type="module" module-name="dao" />
     <orderEntry type="module" module-name="service" />
     <orderEntry type="library" scope="TEST" name="Maven: junit:junit:3.8.1" level="project" />
