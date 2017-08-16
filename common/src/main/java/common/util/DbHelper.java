@@ -17,18 +17,27 @@ public class DbHelper {
 
     private static Logger logger = LoggerFactory.getLogger(DbHelper.class);
 
+//    private static String dbPath = "db.properties";
+//    private static String driverClassName = Common.getConfigDB("jdbc.driver", dbPath);
+//    private static String url = Common.getConfigDB("jdbc.url", dbPath);
+//    private static String user = Common.getConfigDB("jdbc.username", dbPath);
+//    private static String password = Common.getConfigDB("jdbc.password", dbPath);
 
-    private static String driverClassName = Common.getConfigDB("jdbc.driver");
-    private static String url = Common.getConfigDB("jdbc.url");
-    private static String user = Common.getConfigDB("jdbc.username");
-    private static String password = Common.getConfigDB("jdbc.password");
+    private static String  driverClassName, url, user, password;
+
+    public DbHelper(String driverClassName, String url, String user, String password) {
+        this.driverClassName=driverClassName;
+        this.url=url;
+        this.user=user;
+        this.password=password;
+    }
 
     /**
      * 获取数据库链接
      *
      * @return 数据库链接
      */
-    public static Connection getConnection() {
+    public Connection getConnection() {
         Connection conn = null;
         try {
             DbUtils.loadDriver(driverClassName);

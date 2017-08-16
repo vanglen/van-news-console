@@ -62,21 +62,6 @@ public class Common {
 
 
     /**
-     * 图片替换成https
-     *
-     * @param picUrl 图片地址
-     * @return https格式的图片地址
-     */
-    public static String GetAutoHomeImageSrc(String picUrl) {
-        String result = "";
-        if (!picUrl.equals("")) {
-            result = picUrl.replace("http://", "https://");
-        }
-        return result;
-    }
-
-
-    /**
      * @param picUrl 原图地址
      * @param size   需要转换的4：3图片  12090 220165
      * @return 返回新的图片地址
@@ -235,10 +220,10 @@ public class Common {
      * @param name
      * @return
      */
-    public static String getConfigDB(String name) {
+    public static String getConfigDB(String name, String path) {
         String result = "";
         if (!name.equals("")) {
-            result = Common.getConfig("/prop/db.properties", name);
+            result = Common.getConfig(path, name);
         }
         return result;
     }
@@ -249,10 +234,10 @@ public class Common {
      * @param name name
      * @return key
      */
-    public static String getConfigCommon(String name) {
+    public static String getConfigCommon(String name, String path) {
         String result = "";
         if (!name.equals("")) {
-            result = Common.getConfig("/prop/common.properties", name);
+            result = Common.getConfig(path, name);
         }
         return result;
     }
