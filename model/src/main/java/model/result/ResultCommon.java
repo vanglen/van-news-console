@@ -3,8 +3,8 @@ package model.result;
 import model.param.ParamBase;
 
 public class ResultCommon<T> extends ParamBase {
-    private int code;
-    private String msg;
+    private int code = 0;
+    private String msg = "";
     private T data;
 
     public int getCode() {

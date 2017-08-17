@@ -28,8 +28,6 @@ public class AccountController {
     @RequestMapping("register")
     public ResultCommon Register(ParamAccount paramAccount) {
         ResultCommon<String> result = new ResultCommon<String>();
-        result.setCode(0);
-        result.setMsg("");
         result.setData("");
 
         //check params
@@ -67,8 +65,6 @@ public class AccountController {
     @RequestMapping("login")
     public ResultCommon Login(ParamAccount paramAccount) {
         ResultCommon<ResultAccountLogin> result = new ResultCommon<ResultAccountLogin>();
-        result.setCode(0);
-        result.setMsg("");
         ResultAccountLogin resultAccountLogin = new ResultAccountLogin();
         resultAccountLogin.setToken("");
         result.setData(resultAccountLogin);

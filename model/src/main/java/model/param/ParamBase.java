@@ -1,9 +1,9 @@
 package model.param;
 
 public class ParamBase {
-    private String version;
-    private String deviceid;
-    private long timestamp;
+    private String version = "";
+    private String deviceid = "";
+    private long timestamp = 0;
 
     public String getVersion() {
         return version;
