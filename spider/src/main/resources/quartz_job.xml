@@ -85,18 +85,34 @@
     <!--</trigger>-->
     <!--</schedule>-->
 
+    <!--<schedule>-->
+        <!--<job>-->
+            <!--<name>TestJob</name>-->
+            <!--<group>TestJobGroup</group>-->
+            <!--<job-class>spider.job.TestJob</job-class>-->
+        <!--</job>-->
+        <!--<trigger>-->
+            <!--<cron>-->
+                <!--<name>TestJobTrigger</name>-->
+                <!--<job-name>TestJob</job-name>-->
+                <!--<job-group>TestJobGroup</job-group>-->
+                <!--<cron-expression>0/10 * * * * ?</cron-expression>-->
+            <!--</cron>-->
+        <!--</trigger>-->
+    <!--</schedule>-->
+
     <schedule>
         <job>
-            <name>TestJob</name>
-            <group>TestJobGroup</group>
-            <job-class>spider.job.TestJob</job-class>
+            <name>ToutiaoJob</name>
+            <group>ToutiaoJobGroup</group>
+            <job-class>spider.job.ToutiaoJob</job-class>
         </job>
         <trigger>
             <cron>
-                <name>TestJobTrigger</name>
-                <job-name>TestJob</job-name>
-                <job-group>TestJobGroup</job-group>
-                <cron-expression>0/10 * * * * ?</cron-expression>
+                <name>ToutiaoJobTrigger</name>
+                <job-name>ToutiaoJob</job-name>
+                <job-group>ToutiaoJobGroup</job-group>
+                <cron-expression>45 45 16 * * ?</cron-expression>
             </cron>
         </trigger>
     </schedule>

@@ -13,9 +13,9 @@ import java.sql.SQLException;
  * DATE:2016/12/22
  * Time:13:23
  */
-public class DbHelper {
+public class DbUtil {
 
-    private static Logger logger = LoggerFactory.getLogger(DbHelper.class);
+    private static Logger logger = LoggerFactory.getLogger(DbUtil.class);
 
 //    private static String dbPath = "db.properties";
 //    private static String driverClassName = Common.getConfigDB("jdbc.driver", dbPath);
@@ -25,7 +25,7 @@ public class DbHelper {
 
     private static String  driverClassName, url, user, password;
 
-    public DbHelper(String driverClassName, String url, String user, String password) {
+    public DbUtil(String driverClassName, String url, String user, String password) {
         this.driverClassName=driverClassName;
         this.url=url;
         this.user=user;

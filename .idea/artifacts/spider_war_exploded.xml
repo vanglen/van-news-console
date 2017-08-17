@@ -21,6 +21,8 @@
           <element id="archive" name="model-1.0-SNAPSHOT.jar">
             <element id="module-output" name="model" />
           </element>
+          <element id="library" level="project" name="Maven: org.jsoup:jsoup:1.8.2" />
+          <element id="library" level="project" name="Maven: com.alibaba:fastjson:1.2.27" />
           <element id="library" level="project" name="Maven: org.apache.logging.log4j:log4j-api:2.8.2" />
           <element id="library" level="project" name="Maven: org.apache.logging.log4j:log4j-core:2.8.2" />
           <element id="library" level="project" name="Maven: org.apache.logging.log4j:log4j-jcl:2.8.2" />

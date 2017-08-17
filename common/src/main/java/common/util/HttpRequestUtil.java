@@ -11,7 +11,7 @@ import java.util.Map;
  * DATE:2016/12/22
  * Time:13:38
  */
-public class HttpRequestHelper {
+public class HttpRequestUtil {
     /**
      * 向指定URL发送GET方法的请求
      * 请求参数，请求参数应该是 name1=value1&name2=value2 的形式。
@@ -21,7 +21,7 @@ public class HttpRequestHelper {
      * @return
      */
     public static String sendGet(String url, String param) {
-        return HttpRequestHelper.sendGet(url, param, null);
+        return HttpRequestUtil.sendGet(url, param, null);
     }
 
 

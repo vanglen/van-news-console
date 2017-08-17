@@ -1,14 +1,21 @@
 package spider.job;
 
+import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
 import common.util.DateUtil;
-import common.util.DbHelper;
-import common.util.HttpRequestHelper;
+import common.util.DbUtil;
+import common.util.HttpRequestUtil;
+import common.util.ImageUtil;
 import model.spider.toutiao.ToutiaoFeedNewsApiResult;
 import model.user.TNews;
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
+import org.apache.commons.lang.StringUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -20,6 +27,8 @@ import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Created by Administrator on 2017/8/16.
@@ -30,18 +39,29 @@ public class ToutiaoJob implements Job {
     private static String url = "jdbc:mysql://localhost:3306/van_news";
     private static String user = "root";
     private static String password = "root";
+
     private static Logger logger = LoggerFactory.getLogger(ToutiaoJob.class);
+
+    private static String api_url = "https://lf.snssdk.com/api/news/feed/v63/";
+    private static String api_params = "category=news_house&count=20&max_behot_time={0}&city=%E5%8C%97%E4%BA%AC%E5%B8%82&cid=17960971&iid=13518918769";
+    private static long max_behot_time = DateUtil.getNowTimeStamp();
+    private static long max_num_perday = 100;//每天抓取最大数量
+    private static int current_num_today = 0;//当天抓取数量
+
+    private static String path_img = "images_news/" + DateUtil.getDateNow("yyyy-MM-dd") + "/";
 
     public void execute(JobExecutionContext arg0) throws JobExecutionException {
         try {
-            //
+            //每天执行一次，每次重置参数
+            max_behot_time = DateUtil.getNowTimeStamp();
+            current_num_today = 0;
+            do {
+                getData();
+            } while (max_num_perday > current_num_today);
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            logger.error("ToutiaoJob执行出错：" + e.toString());
         }
     }
-
-    private static String api_url = "https://lf.snssdk.com/api/news/feed/v63/?category=news_house&count=20&max_behot_time={0}&city=%E5%8C%97%E4%BA%AC%E5%B8%82&cid=17960971&iid=13518918769";
-    private static long max_behot_time = DateUtil.getNowTimeStamp();
 
 //    public static void main(String[] args0) {
 //        getData();
@@ -49,9 +69,10 @@ public class ToutiaoJob implements Job {
 
     public static void getData() {
         logger.info("开始读取url");
+        boolean has_more = false;
         String result = "";
         try {
-            result = HttpRequestHelper.sendGet(MessageFormat.format(api_url, max_behot_time), "");
+            result = HttpRequestUtil.sendGet(api_url, MessageFormat.format(api_params, max_behot_time));
             logger.info("ApiResult:" + result);
             if (result != null && !result.equals("")) {
                 Gson gson = new Gson();
@@ -63,32 +84,41 @@ public class ToutiaoJob implements Job {
                     logger.error("反序列化apiresult出错：" + e.toString());
                 }
                 if (apiResult != null && apiResult.getData().size() > 0) {
+                    has_more = apiResult.isHas_more();
                     List<ToutiaoFeedNewsApiResult.ToutiaoFeedNewsData> listNewsData = apiResult.getData();
                     for (ToutiaoFeedNewsApiResult.ToutiaoFeedNewsData newsData : listNewsData) {
                         ToutiaoFeedNewsApiResult.ToutiaoFeedNewsItem newsItem = gson.fromJson(newsData.getContent(), ToutiaoFeedNewsApiResult.ToutiaoFeedNewsItem.class);
-                        max_behot_time = newsItem.getBehot_time();
+                        if (newsItem.getTitle() != null && !newsItem.isHas_video()) {
+                            max_behot_time = newsItem.getBehot_time();
 
-                        //构造实体
-                        TNews tNews = new TNews();
-                        tNews.setTitle(newsItem.getTitle());
-                        tNews.setPic("");
-                        tNews.setSource(newsItem.getSource());
-                        tNews.setTags(newsItem.getTag());
-                        tNews.setType(newsItem.getArticle_type());
-                        tNews.setContent("");
-                        tNews.setCountComment(0);
-                        tNews.setCountLike(0);
-                        tNews.setCountBrowser(0);
-                        tNews.setPublishTime(new Date(newsItem.getPublish_time()));
-                        tNews.setStatus(0);
-                        tNews.setCreatedtime(new Date());
+                            //构造实体
+                            TNews tNews = new TNews();
+                            tNews.setTitle(newsItem.getTitle());
+                            if (newsItem.isHas_image()) {
+                                List<ToutiaoFeedNewsApiResult.ToutiaoFeedNewsItemImageItem> listImageItems = newsItem.getImage_list();
+                                if (listImageItems.size() > 0) {
+                                    tNews.setPic(listImageItems.get(0).getUrl());
+                                }
+                            } else {
+                                tNews.setPic("");
+                            }
+                            tNews.setSource(newsItem.getSource());
+                            tNews.setTags(newsItem.getTag());
+                            tNews.setType(newsItem.getArticle_type());
+                            tNews.setContent(GetArticleInfo(newsItem.getArticle_url()));
+                            tNews.setCountComment(0);
+                            tNews.setCountLike(0);
+                            tNews.setCountBrowser(0);
+                            tNews.setPublishTime(new Date(newsItem.getPublish_time()));
+                            tNews.setStatus(0);
+                            tNews.setCreatedtime(new Date());
 
-                        int resultDB = AddNews(tNews);
+                            int resultDB = AddNews(tNews);
+                            current_num_today++;
+                        }
                     }
                 }
             }
-
-
 //            if (result != null && !result.equals("")) {
 //                Gson gson = new Gson();
 //                //从接口返回数据
@@ -118,7 +148,7 @@ public class ToutiaoJob implements Job {
 //
 //                                        //单图模式去单张图片，多图为空
 //                                        if (item.getMiddle_mode()) {
-//                                            item.setPc_image_url(ImageHelper.GetWzImageUrl(item.getPc_image_url()));
+//                                            item.setPc_image_url(ImageUtil.GetWzImageUrl(item.getPc_image_url()));
 //                                            m.setPicUrl(item.getPc_image_url());
 //                                            m.setPicUrl_List("");
 //                                        } else {
@@ -126,7 +156,7 @@ public class ToutiaoJob implements Job {
 //                                            List<TouTiaoImages> list = item.getImage_list();
 //                                            if (list.size() > 0) {
 //                                                for (TouTiaoImages img : list) {
-//                                                    img.setPc_url(ImageHelper.GetWzImageUrl(img.getPc_url()));
+//                                                    img.setPc_url(ImageUtil.GetWzImageUrl(img.getPc_url()));
 //                                                    imgs += img.getPc_url() + ",";
 //                                                }
 //                                                if (!imgs.equals("")) {
@@ -181,87 +211,35 @@ public class ToutiaoJob implements Job {
             e.printStackTrace();
             logger.error("抓取解析异常：" + e.getMessage() + "Result:" + result, e);
         }
-
     }
 
-//    /**
-//     * 从M站获取头条内容
-//     *
-//     * @param url m站地址
-//     * @return spider_news_info
-//     */
-//    private static spider_news_info GetArticleInfoFromMSite(String url) {
-//        spider_news_info model = new spider_news_info();
-//        url = url.replace("www", "m").replace("tem/", "") + "info/";
-//        String result = HttpRequest.sendGet(url, "");
-//        if (!result.equals("")) {
-//            try {
-//                Gson gson = new Gson();
-//                TouTiaoInfoResult touTiaoInfoResult = gson.fromJson(result, new TypeToken<TouTiaoInfoResult>() {
-//                }.getType());
-//                if (touTiaoInfoResult != null) {
-//                    model.setSource(touTiaoInfoResult.getData().getSource());
-//                    String Info = touTiaoInfoResult.getData().getContent();
-//                    Document document = Jsoup.parse(Info);
-//                    Element element = document.select("div").first();
-//                    ImageHelper.updateContentImage(element);
-//                    model.setMain(element.html());
-//                }
-//            } catch (Exception e) {
-//                logger.error("GetArticleInfoFromMSite错误：" + e.getMessage());
-//            }
-//        }
-//        return model;
-//    }
+    /**
+     * 获取文章详情
+     * 2016/10/14  14:30
+     */
+    private static String GetArticleInfo(String url) {
+        String content = "";
+        if (url != null && url.length() > 0) {
+            try {
+                Document document = Jsoup.connect(url).get();
 
+                String jsonStr  = StringUtils.substringBetween(document.html(),"var BASE_DATA =", ";");
+                Map parse = (Map) JSONObject.parse(jsonStr);
 
-//    /**
-//     * 获取文章详情
-//     * 2016/10/14  14:30
-//     */
-//    private static spider_news_info GetArticleInfoNew(String url, Boolean hasVideo) {
-//        spider_news_info model = new spider_news_info();
-//        try {
-//            Document document = Jsoup.connect(url).get();
-//            if (hasVideo) {
-//                Elements links = document.select(".detail-main");
-//                if (links.size() > 0) {
-//                    for (Element e : links) {
-//                        ImageHelper.updateContentImage(e);
-//                        Element es = e.select(".video-wrap").get(0);
-//                        String main = es.html().replace('\'', '‘');
-//                        model.setMain(main);
-//                        String source = e.select(".name").text();
-//                        model.setSource("今日头条-" + source);
-//                    }
-//                }
-//            } else {
-//                Elements links = document.select("#article-main");
-//                if (links.size() > 0) {
-//                    for (Element item : links) {
-//                        ImageHelper.updateContentImage(item);
-//                        String source = item.select(".articleInfo .src").text();
-//                        model.setSource("今日头条-" + source);
-//                        Element es = item.select(".article-content").get(0);
-//                        es.select("script").remove();
-//                        model.setMain(es.html().replace('\'', '‘'));
-//                    }
-//                }
-//            }
-//
-//        } catch (Exception ex) {
-//            ex.printStackTrace();
-//            logger.error("获取文章详情异常", ex);
-//        }
-//        return model;
-//    }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                logger.error("获取文章详情异常", ex);
+            }
+        }
+        return content;
+    }
 
     private static int AddNews(TNews model) {
         int result = 0;
         if (model != null && !model.getTitle().equals("")) {
             String strTitle = model.getTitle().replace("?", "？");
-            String STR_SQL_FIND_TITLE = "SELECT id from t_news with(nolock) where title ='" + strTitle + "' limit 1";
-            Connection conn = new DbHelper(driverClassName, url, user, password).getConnection();
+            String STR_SQL_FIND_TITLE = "SELECT id from t_news where title ='" + strTitle + "' limit 1";
+            Connection conn = new DbUtil(driverClassName, url, user, password).getConnection();
             QueryRunner queryRunner = new QueryRunner();
             try {
                 List<TNews> list = queryRunner.query(conn, STR_SQL_FIND_TITLE, new BeanListHandler<TNews>(TNews.class));
