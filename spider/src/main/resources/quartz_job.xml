@@ -103,16 +103,16 @@
 
     <schedule>
         <job>
-            <name>ToutiaoJob</name>
-            <group>ToutiaoJobGroup</group>
-            <job-class>spider.job.ToutiaoJob</job-class>
+            <name>NetEaseHouseJob</name>
+            <group>NetEaseHouseJobGroup</group>
+            <job-class>spider.job.NetEaseHouseJob</job-class>
         </job>
         <trigger>
             <cron>
-                <name>ToutiaoJobTrigger</name>
-                <job-name>ToutiaoJob</job-name>
-                <job-group>ToutiaoJobGroup</job-group>
-                <cron-expression>45 45 16 * * ?</cron-expression>
+                <name>NetEaseHouseJobTrigger</name>
+                <job-name>NetEaseHouseJob</job-name>
+                <job-group>NetEaseHouseJobGroup</job-group>
+                <cron-expression>0 58 18 * * ?</cron-expression>
             </cron>
         </trigger>
     </schedule>
