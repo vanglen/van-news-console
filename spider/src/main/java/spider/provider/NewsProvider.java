@@ -19,7 +19,7 @@ public class NewsProvider {
 
     private static Logger logger = LoggerFactory.getLogger(NewsProvider.class);
     private static String driverClassName = "com.mysql.jdbc.Driver";
-    private static String url = "jdbc:mysql://localhost:3306/van_news";
+    private static String url = "jdbc:mysql://localhost:3306/van_news?characterEncoding=utf8&useSSL=false";
     private static String user = "root";
     private static String password = "root";
 
