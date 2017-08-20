@@ -2,7 +2,7 @@ package model.result;
 
 import model.param.ParamBase;
 
-public class ResultCommon<T> extends ParamBase {
+public class ResultCommon<T> extends ResultBase {
     private int code = 0;
     private String msg = "";
     private T data;

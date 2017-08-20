@@ -1,6 +1,6 @@
 package model.param;
 
-public class ParamMyTab extends ParamBase{
+public class ParamTabMy extends ParamBase{
 
     private int userid;
     private String token;

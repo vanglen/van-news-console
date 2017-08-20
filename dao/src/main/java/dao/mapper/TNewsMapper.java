@@ -1,8 +1,8 @@
 package dao.mapper;
 
 import java.util.List;
-import model.user.TNews;
-import model.user.TNewsExample;
+import model.news.TNews;
+import model.news.TNewsExample;
 import org.apache.ibatis.annotations.Param;
 
 public interface TNewsMapper {

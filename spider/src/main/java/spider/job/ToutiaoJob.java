@@ -3,19 +3,12 @@ package spider.job;
 import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
 import common.util.DateUtil;
-import common.util.DbUtil;
 import common.util.HttpRequestUtil;
-import common.util.ImageUtil;
 import model.spider.toutiao.ToutiaoFeedNewsApiResult;
-import model.user.TNews;
-import org.apache.commons.dbutils.DbUtils;
-import org.apache.commons.dbutils.QueryRunner;
-import org.apache.commons.dbutils.handlers.BeanListHandler;
+import model.news.TNews;
 import org.apache.commons.lang.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -23,13 +16,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spider.provider.NewsProvider;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * Created by Administrator on 2017/8/16.
@@ -64,7 +54,7 @@ public class ToutiaoJob implements Job {
 //        getData();
 //    }
 
-    public static void getData() {
+    private static void getData() {
         logger.info("开始读取url");
         boolean has_more = false;
         String result = "";
@@ -81,7 +71,7 @@ public class ToutiaoJob implements Job {
                     logger.error("反序列化apiresult出错：" + e.toString());
                 }
                 if (apiResult != null && apiResult.getData().size() > 0) {
-                    has_more = apiResult.isHas_more();
+//                    has_more = apiResult.isHas_more();
                     List<ToutiaoFeedNewsApiResult.ToutiaoFeedNewsData> listNewsData = apiResult.getData();
                     for (ToutiaoFeedNewsApiResult.ToutiaoFeedNewsData newsData : listNewsData) {
                         ToutiaoFeedNewsApiResult.ToutiaoFeedNewsItem newsItem = gson.fromJson(newsData.getContent(), ToutiaoFeedNewsApiResult.ToutiaoFeedNewsItem.class);
@@ -220,7 +210,7 @@ public class ToutiaoJob implements Job {
             try {
                 Document document = Jsoup.connect(url).get();
 
-                String jsonStr  = StringUtils.substringBetween(document.html(),"var BASE_DATA =", ";");
+                String jsonStr = StringUtils.substringBetween(document.html(), "var BASE_DATA =", ";");
                 Map parse = (Map) JSONObject.parse(jsonStr);
 
             } catch (Exception ex) {

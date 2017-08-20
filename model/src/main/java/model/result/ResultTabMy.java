@@ -1,9 +1,9 @@
 package model.result;
 
-public class ResultMyTag {
-    private int userid;
-    private String username;
-    private String headpic;
+public class ResultTabMy extends ResultBase {
+    private int userid = 0;
+    private String username = "";
+    private String headpic = "";
 
     public int getUserid() {
         return userid;

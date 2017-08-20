@@ -1,4 +1,4 @@
-package model.user;
+package model.news;
 
 import java.util.ArrayList;
 import java.util.Date;

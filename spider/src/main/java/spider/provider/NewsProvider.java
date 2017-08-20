@@ -1,13 +1,12 @@
 package spider.provider;
 
 import common.util.DbUtil;
-import model.user.TNews;
+import model.news.TNews;
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import spider.job.ToutiaoJob;
 
 import java.sql.Connection;
 import java.sql.SQLException;

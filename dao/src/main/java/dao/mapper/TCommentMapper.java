@@ -1,8 +1,8 @@
 package dao.mapper;
 
 import java.util.List;
-import model.user.TComment;
-import model.user.TCommentExample;
+import model.news.TComment;
+import model.news.TCommentExample;
 import org.apache.ibatis.annotations.Param;
 
 public interface TCommentMapper {
