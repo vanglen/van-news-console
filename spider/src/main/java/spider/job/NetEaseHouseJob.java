@@ -2,22 +2,9 @@ package spider.job;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import common.util.DateUtil;
-import common.util.DbUtil;
 import common.util.HttpRequestUtil;
-import model.spider.netease.NeteaseHouseNewsApiResult;
-import model.spider.netease.NeteaseHouseNewsDetail;
 import model.spider.netease.NeteaseHouseNewsItem;
-import model.spider.toutiao.ToutiaoFeedNewsApiResult;
-import model.user.TNews;
-import org.apache.commons.dbutils.DbUtils;
-import org.apache.commons.dbutils.QueryRunner;
-import org.apache.commons.dbutils.handlers.BeanListHandler;
-import org.apache.commons.lang.StringUtils;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
+import model.news.TNews;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -25,9 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spider.provider.NewsProvider;
 
-import java.lang.reflect.Type;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.*;
 
@@ -86,7 +70,7 @@ public class NetEaseHouseJob implements Job {
         }
     }
 
-    public static void getData(String areaKey, String areaValue, int page) {
+    private static void getData(String areaKey, String areaValue, int page) {
         logger.info("开始读取url");
         boolean has_more = false;
         String result = "";
@@ -103,7 +87,7 @@ public class NetEaseHouseJob implements Job {
                         //构造实体
                         TNews tNews = new TNews();
                         tNews.setTitle(newsItem.getTitle());
-                        tNews.setPic(newsItem.getUrl());
+                        tNews.setPic(newsItem.getImgsrc());
                         tNews.setSource(newsItem.getSource());
                         tNews.setTags("");
                         tNews.setType(0);
@@ -132,7 +116,7 @@ public class NetEaseHouseJob implements Job {
     private static String GetArticleInfo(String docId) {
         String url = MessageFormat.format(api_detail_url, docId);
         String content = "";
-        if (url != null && url.length() > 0) {
+        if (url.length() > 0) {
             try {
                 String result = HttpRequestUtil.sendGet(url, "");
                 logger.info("ApiResult:" + result);
