@@ -46,7 +46,7 @@
 
   <servlet-mapping>
     <servlet-name>SpringMvc</servlet-name>
-    <url-pattern>/</url-pattern>
+    <url-pattern>*.do</url-pattern>
   </servlet-mapping>
 
   <!-- 设置Session超时时间为45分钟 -->

@@ -16,11 +16,17 @@ import java.util.List;
 public class NewsServiceImpl implements NewsService {
 
     @Resource
+    private TNewsMapper tNewsMapper;
+    @Resource
     private TNewsExtendMapper tNewsExtendMapper;
 
     public List<TNews> ListByCheckTime(int count, Date max_check_time) {
 //        return tNewsExtendMapper.selectByChecktime4Page(DateUtil.getDateTime(max_check_time,"yyyy-MM-dd HH:mm:ss"), count);
         return tNewsExtendMapper.selectByChecktime4Page(max_check_time, count);
+    }
+
+    public TNews GetById(int id) {
+        return tNewsMapper.selectByPrimaryKey(id);
     }
 
     public void Like() {

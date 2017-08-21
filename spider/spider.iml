@@ -12,7 +12,7 @@
       </configuration>
     </facet>
   </component>
-  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_5">
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_5" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/target/classes" />
     <output-test url="file://$MODULE_DIR$/target/test-classes" />
     <content url="file://$MODULE_DIR$">
@@ -33,6 +33,7 @@
     <orderEntry type="library" name="Maven: commons-lang:commons-lang:2.6" level="project" />
     <orderEntry type="module" module-name="common" />
     <orderEntry type="library" name="Maven: commons-dbutils:commons-dbutils:1.6" level="project" />
+    <orderEntry type="library" name="Maven: gnu.getopt:java-getopt:1.0.13" level="project" />
     <orderEntry type="module" module-name="model" />
     <orderEntry type="library" name="Maven: org.jsoup:jsoup:1.8.2" level="project" />
     <orderEntry type="library" name="Maven: com.alibaba:fastjson:1.2.27" level="project" />

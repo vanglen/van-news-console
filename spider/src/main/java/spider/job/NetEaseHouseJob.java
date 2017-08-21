@@ -1,8 +1,10 @@
 package spider.job;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import common.util.HttpRequestUtil;
+import common.util.*;
+import common.util.Base64;
 import model.spider.netease.NeteaseHouseNewsItem;
 import model.news.TNews;
 import org.quartz.Job;
@@ -29,11 +31,13 @@ import java.util.*;
  * https://c.m.163.com/nc/article/house/5YyX5Lqs/20-20.html
  * 获取详情
  * https://c.m.163.com/nc/article/CRT4B64F000788HN/full.html
+ * 获取城市列表
+ * http://c.m.163.com/nc/local/city.html
  */
 public class NetEaseHouseJob implements Job {
 
     public NetEaseHouseJob() {
-        mapCatalog.put("5YyX5Lqs", "北京");
+        mapCatalog.put("110000", "北京");
     }
 
     private static Logger logger = LoggerFactory.getLogger(ToutiaoJob.class);
@@ -61,7 +65,8 @@ public class NetEaseHouseJob implements Job {
             Set<String> keys = mapCatalog.keySet();
             for (String key : keys) {
                 do {
-                    getData(key, mapCatalog.get(key), current);
+                    String val= mapCatalog.get(key);
+                    getData(Base64.encode(val), mapCatalog.get(key), current);
                     current += step;
                 } while (max_num_perday > current);
             }
@@ -122,7 +127,17 @@ public class NetEaseHouseJob implements Job {
                 logger.info("ApiResult:" + result);
                 if (result != null && !result.equals("")) {
                     JSONObject apiResult = JSON.parseObject(result);
-                    content = ((Map)apiResult.get(docId)).get("body").toString();
+                    Map doc = ((Map) apiResult.get(docId));
+                    content = doc.get("body").toString();
+                    //替换图片
+                    if (doc.get("img") != null) {
+                        JSONArray imgArray = JSON.parseArray(doc.get("img").toString());
+                        Iterator<Object> imgs = imgArray.iterator();
+                        while (imgs.hasNext()) {
+                            JSONObject img = (JSONObject) imgs.next();
+                            content = content.replace(img.getString("ref"), "<img src=\"" + img.getString("src") + "\" alt=\"" + img.getString("alt") + "\">");
+                        }
+                    }
 //                    NeteaseHouseNewsDetail detail = JSON.parseObject(apiResult.get(docId).toString(), NeteaseHouseNewsDetail.class);
 //                    if (detail != null) {
 //                    }
