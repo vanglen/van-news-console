@@ -1,15 +1,5 @@
 USE van_news;
 
-CREATE TABLE `areas` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `area_id` varchar(45) DEFAULT NULL,
-  `name` varchar(45) DEFAULT NULL,
-  `first_letter` varchar(45) DEFAULT NULL,
-  `parent_id` varchar(45) DEFAULT NULL,
-  `createtime` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3635 DEFAULT CHARSET=utf8;
-
 INSERT INTO `van_news`.`areas` ( `area_id`, `name`, `first_letter`, `parent_id`, `createtime`) VALUES ( '654500', '奎屯', 'A', '650000', '2013-05-24 05:32:00');
 INSERT INTO `van_news`.`areas` ( `area_id`, `name`, `first_letter`, `parent_id`, `createtime`) VALUES ( '340000', '安徽', 'A', '0', '2013-05-24 05:32:00');
 INSERT INTO `van_news`.`areas` ( `area_id`, `name`, `first_letter`, `parent_id`, `createtime`) VALUES ( '340800', '安庆', 'A', '340000', '2013-05-24 05:32:00');

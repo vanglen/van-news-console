@@ -1,8 +1,11 @@
 package common.util;
 
+import org.apache.commons.codec.binary.Base64;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -14,6 +17,25 @@ import java.util.*;
  * Time:13:19
  */
 public class Common {
+
+    public static String encodeBase64(String str, String charsetName) {
+        try {
+            return new String(Base64.encodeBase64(str.getBytes(charsetName)));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    public static String decodeBase64(String str, String charsetName) {
+        try {
+            return new String(Base64.decodeBase64(str.getBytes(charsetName)));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
     public static void ShowMessage(Object o) {
         System.out.println(o);
     }

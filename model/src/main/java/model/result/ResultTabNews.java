@@ -23,7 +23,7 @@ public class ResultTabNews extends ResultBase {
         private int count_comment = 0;
         private int count_like = 0;
         private int count_browser = 0;
-        private String url = "";
+        private String openschama = "";
         private String news_time = "";
         private long news_timestamp = 0;
 
@@ -91,12 +91,12 @@ public class ResultTabNews extends ResultBase {
             this.count_browser = count_browser;
         }
 
-        public String getUrl() {
-            return url;
+        public String getOpenschama() {
+            return openschama;
         }
 
-        public void setUrl(String url) {
-            this.url = url;
+        public void setOpenschama(String openschama) {
+            this.openschama = openschama;
         }
 
         public String getNews_time() {

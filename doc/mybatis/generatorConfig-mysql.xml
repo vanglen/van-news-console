@@ -5,7 +5,7 @@
 
 <generatorConfiguration>
     <classPathEntry
-            location="C:\Users\Vanglen\IdeaProjects\console\doc\mybatis\mysql-connector-java-5.1.43.jar"/>
+            location="D:\MavenRepository\mysql\mysql-connector-java\5.1.43\mysql-connector-java-5.1.43.jar"/>
 
     <context id="DB2Tables" targetRuntime="MyBatis3" defaultModelType="flat">
         <jdbcConnection driverClass="com.mysql.jdbc.Driver"
@@ -18,21 +18,21 @@
             <property name="forceBigDecimals" value="false"/>
         </javaTypeResolver>
 
-        <javaModelGenerator targetPackage="model.user" targetProject="D:\Work\le-news\src\van-news-console\model\src\main\java">
+        <javaModelGenerator targetPackage="model.newsarea" targetProject="D:\Work\src\git\van-news-console\model\src\main\java">
             <property name="enableSubPackages" value="true"/>
             <property name="trimStrings" value="true"/>
         </javaModelGenerator>
 
-        <sqlMapGenerator targetPackage="dao.mapperxml" targetProject="D:\Work\le-news\src\van-news-console\dao\src\main\resources">
+        <sqlMapGenerator targetPackage="dao.mapperxml" targetProject="D:\Work\src\git\van-news-console\dao\src\main\resources">
             <property name="enableSubPackages" value="true"/>
         </sqlMapGenerator>
 
         <javaClientGenerator type="XMLMAPPER" targetPackage="dao.mapper"
-                             targetProject="D:\Work\le-news\src\van-news-console\dao\src\main\java">
+                             targetProject="D:\Work\src\git\van-news-console\dao\src\main\java">
             <property name="enableSubPackages" value="true"/>
         </javaClientGenerator>
 
-        <table tableName="t_comment">
+        <table tableName="t_news_area">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
 

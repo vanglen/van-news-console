@@ -38,7 +38,6 @@ public class TabController {
     public ResultCommon GetMyTagInfo(ParamTabMy paramTabMy) {
         ResultCommon<ResultTabMy> result = new ResultCommon<ResultTabMy>();
         ResultTabMy myTag = new ResultTabMy();
-        myTag.setUserid(0);
         myTag.setUsername("请登陆");
         myTag.setHeadpic("/pic/default.jpg");
 
@@ -61,6 +60,7 @@ public class TabController {
             }
         }
 
+        result.setCode(1);
         result.setData(myTag);
         return result;
     }
@@ -96,10 +96,12 @@ public class TabController {
             item.setPic(news.getPic());
             item.setSource(news.getSource());
             item.setTags(news.getTags());
+            item.setOpenschama("news/detail.do?news_id=" + news.getId());
 
             newsTab.getNews_data().add(item);
         }
 
+        result.setCode(1);
         result.setData(newsTab);
         return result;
     }
