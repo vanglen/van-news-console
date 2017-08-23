@@ -20,6 +20,10 @@ public class UserServiceImpl implements UserService {
         return tUserMapper.insert(tUser);
     }
 
+    public int Modify(TUser tUser) {
+        return tUserMapper.updateByPrimaryKey(tUser);
+    }
+
     public boolean ExistByUsername(String username) {
         TUserExample example = new TUserExample();
         example.createCriteria().andUsernameEqualTo(username);
@@ -46,5 +50,18 @@ public class UserServiceImpl implements UserService {
 
     public String GenerateUserToken(TUser user) {
         return MD5Encrypt.MD5Encode(user.getId() + user.getUsername() + user.getPassword());
+    }
+
+    public boolean VerifyUserToken(int user_id, String user_token) {
+        if (user_id > 0 && user_token != null && user_token.length() > 0) {
+            TUser user = GetById(user_id);
+            if (user != null) {
+                String veryfy_user_token = GenerateUserToken(user);
+                if (veryfy_user_token.equals((user_token))) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

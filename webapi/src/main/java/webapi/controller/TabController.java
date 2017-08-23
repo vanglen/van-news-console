@@ -41,20 +41,25 @@ public class TabController {
         myTag.setUsername("请登陆");
         myTag.setHeadpic("/pic/default.jpg");
 
-        if (paramTabMy.getUserid() > 0 &&
-                paramTabMy.getToken() != null &&
-                paramTabMy.getToken().length() > 0) {
+        if (paramTabMy.getUser_id() > 0 &&
+                paramTabMy.getUser_token() != null &&
+                paramTabMy.getUser_token().length() > 0) {
 
             //根据ID获取用户信息
-            TUser tUser = userService.GetById(paramTabMy.getUserid());
+            TUser tUser = userService.GetById(paramTabMy.getUser_id());
             //验证token
             String userToken = userService.GenerateUserToken(tUser);
-            if (!userToken.equalsIgnoreCase(paramTabMy.getToken())) {
+            if (!userToken.equalsIgnoreCase(paramTabMy.getUser_token())) {
                 result.setCode(-1);
                 result.setMsg("非法用户！");
             } else {
                 myTag.setUserid(tUser.getId());
                 myTag.setUsername(tUser.getUsername());
+                myTag.setNickname(tUser.getNickname());
+                myTag.setMobile(tUser.getMobile());
+                myTag.setSex(tUser.getSex());
+                myTag.setAddress(tUser.getAddress());
+                myTag.setHeadpic(tUser.getHeadpic());
                 if (tUser.getHeadpic() != null && tUser.getHeadpic().length() > 0)
                     myTag.setHeadpic(tUser.getHeadpic());
             }
@@ -77,13 +82,16 @@ public class TabController {
         ResultCommon<ResultTabNews> result = new ResultCommon<ResultTabNews>();
         ResultTabNews newsTab = new ResultTabNews();
 
-        if (paramTabNews.getMax_news_timestamp() <= 0) {
-            paramTabNews.setMax_news_timestamp(new Date().getTime());
+        if (paramTabNews.getMax_timestamp() <= 0) {
+            paramTabNews.setMax_timestamp(new Date().getTime());
+        }
+        if (paramTabNews.getCount() <= 0) {
+            paramTabNews.setCount(20);
         }
 
-        Date max_check_time = new Date(paramTabNews.getMax_news_timestamp());
+        Date max_check_time = new Date(paramTabNews.getMax_timestamp());
 
-        List<TNews> newsList = newsService.ListByCheckTime(20, max_check_time);
+        List<TNews> newsList = newsService.ListByCheckTime(paramTabNews.getCount(), max_check_time);
         for (TNews news : newsList) {
             ResultTabNews.ResultTabNewsItem item = newsTab.new ResultTabNewsItem();
             item.setCount_browser(news.getCountBrowser());
