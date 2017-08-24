@@ -5,6 +5,22 @@
         xsi:schemaLocation="http://www.quartz-scheduler.org/xml/JobSchedulingData http://www.quartz-scheduler.org/xml/job_scheduling_data_1_8.xsd"
         version="1.8">
 
+    <schedule>
+        <job>
+            <name>NetEaseHouseJob</name>
+            <group>NetEaseHouseJobGroup</group>
+            <job-class>spider.job.NetEaseHouseJob</job-class>
+        </job>
+        <trigger>
+            <cron>
+                <name>NetEaseHouseJobTrigger</name>
+                <job-name>NetEaseHouseJob</job-name>
+                <job-group>NetEaseHouseJobGroup</job-group>
+                <cron-expression>30 20 20 * * ?</cron-expression>
+            </cron>
+        </trigger>
+    </schedule>
+
     <!--<schedule>-->
     <!--<job>-->
     <!--<name>ShuoKeJob</name>-->
@@ -101,20 +117,5 @@
         <!--</trigger>-->
     <!--</schedule>-->
 
-    <schedule>
-        <job>
-            <name>NetEaseHouseJob</name>
-            <group>NetEaseHouseJobGroup</group>
-            <job-class>spider.job.NetEaseHouseJob</job-class>
-        </job>
-        <trigger>
-            <cron>
-                <name>NetEaseHouseJobTrigger</name>
-                <job-name>NetEaseHouseJob</job-name>
-                <job-group>NetEaseHouseJobGroup</job-group>
-                <cron-expression>30 20 20 * * ?</cron-expression>
-            </cron>
-        </trigger>
-    </schedule>
 
 </job-scheduling-data>

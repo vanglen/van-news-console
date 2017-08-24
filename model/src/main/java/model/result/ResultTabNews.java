@@ -41,7 +41,8 @@ public class ResultTabNews extends ResultBase {
         private int count_comment = 0;
         private int count_like = 0;
         private int count_browser = 0;
-        private String openschama = "";
+        private String url = "";
+        private String openschema = "";
         private String news_time = "";
         private long news_timestamp = 0;
 
@@ -109,12 +110,20 @@ public class ResultTabNews extends ResultBase {
             this.count_browser = count_browser;
         }
 
-        public String getOpenschama() {
-            return openschama;
+        public String getUrl() {
+            return url;
         }
 
-        public void setOpenschama(String openschama) {
-            this.openschama = openschama;
+        public void setUrl(String url) {
+            this.url = url;
+        }
+
+        public String getOpenschema() {
+            return openschema;
+        }
+
+        public void setOpenschema(String openschema) {
+            this.openschema = openschema;
         }
 
         public String getNews_time() {

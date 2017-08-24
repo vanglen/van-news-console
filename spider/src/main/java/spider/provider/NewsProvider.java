@@ -120,9 +120,18 @@ public class NewsProvider {
         return result;
     }
 
+    public static List<TNewsArea> ListNewsAreaAll() {
+        String sql = "SELECT `id`, `area_id` as `areaid`, `name`, `first_letter` as `firstletter`, `parent_id` as `parentid`, `status`, `createdtime` from t_news_area  ;";
+        return ListNewsArea(sql);
+    }
+
     public static List<TNewsArea> ListNewsAreaUsable() {
-        List<TNewsArea> result=null;
-        String sql = "SELECT * from t_news_area where status = 1 ;";
+        String sql = "SELECT `id`, `area_id` as `areaid`, `name`, `first_letter` as `firstletter`, `parent_id` as `parentid`, `status`, `createdtime` from t_news_area where `status`=1 ;";
+        return ListNewsArea(sql);
+    }
+
+    private static List<TNewsArea> ListNewsArea(String sql) {
+        List<TNewsArea> result = null;
         Connection conn = new DbUtil(driverClassName, url, user, password).getConnection();
         QueryRunner queryRunner = new QueryRunner();
         try {

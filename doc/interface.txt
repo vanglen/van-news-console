@@ -87,7 +87,7 @@ http://www.huimaif.com/webapi/tab/news.do
 int city_id
 int catalog_id
 int type
-long last_timestamp
+long last_news_timestamp
 int count
 String version
 String device_id

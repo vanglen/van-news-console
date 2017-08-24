@@ -54,13 +54,17 @@ public class NetEaseHouseJob implements Job {
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         try {
             //更新城市列表
-            mapCatalog = getDataCity();
-            Set<String> keys = mapCatalog.keySet();
-            for (String key : keys) {
-                do {
-                    getDataNews(key, mapCatalog.get(key), current);
-                    current += step;
-                } while (max_num_perday > current);
+            mapCatalog = getDataCityUsable();
+            if (mapCatalog != null && mapCatalog.size() > 0) {
+                Set<String> keys = mapCatalog.keySet();
+                for (String key : keys) {
+                    do {
+                        getDataNews(key, mapCatalog.get(key), current);
+                        current += step;
+                    } while (max_num_perday > current);
+                }
+            } else {
+                logger.info("抓取城市列表为空。");
             }
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -70,7 +74,7 @@ public class NetEaseHouseJob implements Job {
 
     public static void main(String[] args) {
         try {
-            getDataCity();
+            getDataCityUsable();
 //            NetEaseHouseJob job = new NetEaseHouseJob();
 //            Set<String> keys = mapCatalog.keySet();
 //            for (String key : keys) {
@@ -85,66 +89,78 @@ public class NetEaseHouseJob implements Job {
         }
     }
 
-    private static List<TNewsArea> getCityUsable() {
-        return NewsProvider.ListNewsAreaUsable();
+    private static Map<String, String> getDataCityUsable() {
+        List<TNewsArea> tNewsAreaList = NewsProvider.ListNewsAreaUsable();
+        if (tNewsAreaList == null || tNewsAreaList.size() <= 0) {
+            logger.info("抓取城市列表为空。");
+            logger.info("获取抓取城市列表开始。163");
+            getDataCityRemote();
+            logger.info("获取抓取城市列表结束。163");
+            //重新查询
+            tNewsAreaList = NewsProvider.ListNewsAreaUsable();
+        }
+        return ConvertCityList2Map(tNewsAreaList);
     }
 
-    private static Map<String, String> getDataCity() {
-
-        Map<String, String> result = new HashMap<>();
+    private static void getDataCityRemote() {
         //获取当前城市列表
-        List<TNewsArea> tNewsAreaList = NewsProvider.ListNewsAreaUsable();
-
-        //抓取远程城市列表
-        String apiResult = HttpRequestUtil.sendGet(api_url_city, "");
-        if (apiResult != null && !apiResult.equals("")) {
-            JSONObject apiJsonObj = JSON.parseObject(apiResult);
-            JSONArray apiCitys = (JSONArray) apiJsonObj.get("cities");
-            if (apiCitys != null && apiCitys.size() > 0) {
-                Iterator<Object> citys = apiCitys.iterator();
-                while (citys.hasNext()) {
-                    Map apiLetterCitys = (Map) citys.next();
-                    if (apiLetterCitys != null && apiLetterCitys.size() > 0) {
-                        Iterator<String> cityKeys = apiLetterCitys.keySet().iterator();
-                        while (cityKeys.hasNext()) {
-                            String cityKey = cityKeys.next();
-                            JSONArray letterCitys = (JSONArray) apiLetterCitys.get(cityKey);
-                            Iterator<Object> letterCity = letterCitys.iterator();
-                            while (letterCity.hasNext()) {
-                                JSONObject element = (JSONObject) letterCity.next();
-                                String str_city_name = element.get("c").toString();
-                                String str_city_area_id = element.get("m").toString();
-                                boolean bo_city_status = element.containsKey("h") && Boolean.parseBoolean(element.get("h").toString());
-                                //logger.info("getDataCity TRACE:" + str_city_area_id + JSON.toJSONString(tNewsAreaList));
-                                List<TNewsArea> filterNewsAreaList = (tNewsAreaList == null || tNewsAreaList.size() <= 0) ? null : tNewsAreaList.stream().filter(x -> x.getAreaId().equals(str_city_area_id)).collect(Collectors.toList());
-                                //添加城市
-                                if (filterNewsAreaList == null || filterNewsAreaList.size() == 0) {
-                                    TNewsArea tNewsArea = new TNewsArea();
-                                    tNewsArea.setAreaId(str_city_area_id);
-                                    tNewsArea.setName(str_city_name);
-                                    tNewsArea.setStatus(bo_city_status ? 1 : 0);
-                                    tNewsArea.setCreatedtime(new Date());
-                                    tNewsArea.setFirstLetter(String.valueOf(cityKey));
-                                    int resultAddNewsArea = NewsProvider.AddNewsArea(tNewsArea);
-                                    if (resultAddNewsArea <= 0) {
-                                        logger.info("保存城市失败！城市信息：" + letterCity.toString());
+        List<TNewsArea> tNewsAreaList = NewsProvider.ListNewsAreaAll();
+        if (tNewsAreaList == null || tNewsAreaList.size() <= 0) {
+            //抓取远程城市列表
+            logger.info("获取远程城市列表开始。163");
+            String apiResult = HttpRequestUtil.sendGet(api_url_city, "");
+            logger.info("获取远程城市列表结束。163。结果：" + apiResult);
+            if (apiResult != null && !apiResult.equals("")) {
+                JSONObject apiJsonObj = JSON.parseObject(apiResult);
+                JSONArray apiCitys = (JSONArray) apiJsonObj.get("cities");
+                if (apiCitys != null && apiCitys.size() > 0) {
+                    Iterator<Object> citys = apiCitys.iterator();
+                    while (citys.hasNext()) {
+                        Map apiLetterCitys = (Map) citys.next();
+                        if (apiLetterCitys != null && apiLetterCitys.size() > 0) {
+                            Iterator<String> cityKeys = apiLetterCitys.keySet().iterator();
+                            while (cityKeys.hasNext()) {
+                                String cityKey = cityKeys.next();
+                                JSONArray letterCitys = (JSONArray) apiLetterCitys.get(cityKey);
+                                Iterator<Object> letterCity = letterCitys.iterator();
+                                while (letterCity.hasNext()) {
+                                    JSONObject element = (JSONObject) letterCity.next();
+                                    String str_city_name = element.get("c").toString();
+                                    String str_city_area_id = element.get("m").toString();
+                                    boolean bo_city_status = element.containsKey("h") && Boolean.parseBoolean(element.get("h").toString());
+                                    //logger.info("getDataCity TRACE:" + str_city_area_id + JSON.toJSONString(tNewsAreaList));
+                                    List<TNewsArea> filterNewsAreaList = (tNewsAreaList == null || tNewsAreaList.size() <= 0) ? null : tNewsAreaList.stream().filter(x -> x.getAreaId().equals(str_city_area_id)).collect(Collectors.toList());
+                                    //添加城市
+                                    if (filterNewsAreaList == null || filterNewsAreaList.size() == 0) {
+                                        TNewsArea tNewsArea = new TNewsArea();
+                                        tNewsArea.setAreaId(str_city_area_id);
+                                        tNewsArea.setName(str_city_name);
+                                        tNewsArea.setStatus(bo_city_status ? 1 : 0);
+                                        tNewsArea.setCreatedtime(new Date());
+                                        tNewsArea.setFirstLetter(String.valueOf(cityKey));
+                                        int resultAddNewsArea = NewsProvider.AddNewsArea(tNewsArea);
+                                        if (resultAddNewsArea <= 0) {
+                                            logger.info("保存城市失败！城市信息：" + letterCity.toString());
+                                        }
                                     }
                                 }
                             }
                         }
                     }
                 }
-                //重新查询本地城市列表
-                tNewsAreaList = NewsProvider.ListNewsAreaUsable();
             }
         }
+    }
 
+    private static Map<String, String> ConvertCityList2Map(List<TNewsArea> tNewsAreaList) {
+        Map<String, String> result = new HashMap<>();
         if (tNewsAreaList != null && tNewsAreaList.size() > 0) {
             for (TNewsArea tNewsArea : tNewsAreaList) {
-                result.put(tNewsArea.getAreaId(), tNewsArea.getName());
+                if (tNewsArea.getStatus().equals(1)) {
+                    result.put(tNewsArea.getAreaId(), tNewsArea.getName());
+                }
             }
         }
-
         return result;
     }
 
@@ -153,8 +169,10 @@ public class NetEaseHouseJob implements Job {
         boolean has_more = false;
         String result = "";
         try {
+            logger.info("请求资讯列表开始163。");
             result = HttpRequestUtil.sendGet(MessageFormat.format(api_url, Common.encodeBase64(areaValue, "utf-8"), page), "");
-            logger.info("ApiResult:" + result);
+            logger.info("请求资讯列表结束163。返回字节：" + result.length());
+//            logger.info("ApiResult:" + result);
             if (result != null && !result.equals("")) {
                 JSONObject apiResult = JSON.parseObject(result);
                 List<NeteaseHouseNewsItem> listNewsItem = JSON.parseArray(apiResult.get(areaValue).toString(), NeteaseHouseNewsItem.class);
@@ -162,7 +180,9 @@ public class NetEaseHouseJob implements Job {
                 if (listNewsItem != null && listNewsItem.size() > 0) {
                     for (NeteaseHouseNewsItem newsItem : listNewsItem) {
 
-                        if (newsItem.getBoardid().equals("house_bbs") || newsItem.getBoardid().equals("gzhouse_bbs") || newsItem.getSkipType().equals("doc")) {
+                        if ("house_bbs".equalsIgnoreCase(newsItem.getBoardid()) ||
+                                "gzhouse_bbs".equals(newsItem.getBoardid()) ||
+                                "doc".equals(newsItem.getSkipType())) {
                             //构造实体
                             TNews tNews = new TNews();
                             tNews.setTitle(newsItem.getTitle());
@@ -186,7 +206,9 @@ public class NetEaseHouseJob implements Job {
                             tNews.setSourceWebsite("163");
                             tNews.setCreatedtime(new Date());
 
+                            logger.info("添加资讯到数据库开始。");
                             int resultDB = NewsProvider.AddNews(tNews);
+                            logger.info("添加资讯到数据库结束。结果：" + resultDB);
                         }
                     }
                 }

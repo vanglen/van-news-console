@@ -10,6 +10,13 @@
     <context:component-scan base-package="webapi.controller"/>
     <context:component-scan base-package="service"/>
 
+    <!--配置文件-->
+    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="location">
+            <value>classpath:config.properties</value>
+        </property>
+    </bean>
+
     <!--<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">-->
         <!--<property name="prefix" value="/WEB-INF/views/"/>-->
         <!--<property name="suffix" value=".jsp"/>-->
