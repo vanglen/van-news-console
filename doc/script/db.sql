@@ -73,5 +73,5 @@ CREATE TABLE `t_news_area` (
   `status` int(11) DEFAULT NULL,
   `createdtime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='新闻地区表';
+) ENGINE=InnoDB AUTO_INCREMENT=383 DEFAULT CHARSET=utf8 COMMENT='新闻地区表';
 

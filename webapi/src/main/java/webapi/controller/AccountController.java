@@ -1,6 +1,7 @@
 package webapi.controller;
 
 import model.param.ParamAccount;
+import model.result.ResultAccount;
 import model.result.ResultAccountLogin;
 import model.result.ResultCommon;
 import model.user.TUser;
@@ -27,18 +28,17 @@ public class AccountController {
     @ResponseBody
     @RequestMapping("register")
     public ResultCommon Register(ParamAccount paramAccount) {
-        ResultCommon<String> result = new ResultCommon<String>();
-
+        ResultCommon<ResultAccount> result = new ResultCommon<ResultAccount>();
+        ResultAccount resultAccount = new ResultAccount();
         //check params
         if (paramAccount.getUsername() == null ||
-                paramAccount.getUsername().length() == 0 ||
-                userService.ExistByUsername(paramAccount.getUsername())) {
-            result.setCode(-1);
+                paramAccount.getUsername().length() == 0) {
             result.setMsg("用户名错误！");
         } else if (paramAccount.getPassword() == null ||
                 paramAccount.getPassword().length() == 0) {
-            result.setCode(-2);
             result.setMsg("密码不能为空！");
+        } else if (userService.ExistByUsername(paramAccount.getUsername())) {
+            result.setMsg("用户已存在！");
         } else {
             TUser user = new TUser();
             user.setUsername(paramAccount.getUsername());
@@ -47,12 +47,13 @@ public class AccountController {
             if (resultAdd > 0) {
                 result.setCode(1);
                 result.setMsg("注册成功！");
+                TUser resultUser = userService.GetByUsernameAndPassword(paramAccount.getUsername(), paramAccount.getPassword());
+                resultAccount = ConvertUser2Account(resultUser);
             } else {
-                result.setCode(-3);
                 result.setMsg("注册失败！");
             }
         }
-        result.setData("");
+        result.setData(resultAccount);
         return result;
     }
 
@@ -64,35 +65,28 @@ public class AccountController {
     @ResponseBody
     @RequestMapping("login")
     public ResultCommon Login(ParamAccount paramAccount) {
-        ResultCommon<ResultAccountLogin> result = new ResultCommon<ResultAccountLogin>();
-        ResultAccountLogin resultAccountLogin = new ResultAccountLogin();
-        resultAccountLogin.setToken("");
+        ResultCommon<ResultAccount> result = new ResultCommon<ResultAccount>();
+        ResultAccount resultAccount = new ResultAccount();
 
         //check params
         if (paramAccount.getUsername() == null ||
                 paramAccount.getUsername().length() == 0 ||
                 !userService.ExistByUsername(paramAccount.getUsername())) {
-            result.setCode(-1);
             result.setMsg("用户名错误！");
         } else if (paramAccount.getPassword() == null ||
                 paramAccount.getPassword().length() == 0) {
-            result.setCode(-2);
             result.setMsg("密码不能为空！");
         } else {
-            TUser user = new TUser();
-            user.setUsername(paramAccount.getUsername());
-            user.setPassword(paramAccount.getPassword());
-            TUser resultUser = userService.GetByUsernameAndPassword(user.getUsername(), user.getPassword());
+            TUser resultUser = userService.GetByUsernameAndPassword(paramAccount.getUsername(), paramAccount.getPassword());
             if (resultUser != null && resultUser.getId() > 0) {
                 result.setCode(1);
                 result.setMsg("登录成功！");
-                resultAccountLogin.setToken(userService.GenerateUserToken(resultUser));
+                resultAccount = ConvertUser2Account(resultUser);
             } else {
-                result.setCode(-3);
                 result.setMsg("登录失败！");
             }
         }
-        result.setData(resultAccountLogin);
+        result.setData(resultAccount);
         return result;
     }
 
@@ -108,18 +102,35 @@ public class AccountController {
             tUser.setNickname(paramAccount.getNickname());
             tUser.setMobile(paramAccount.getMobile());
             tUser.setHeadpic(paramAccount.getHeadpic());
+            tUser.setSex(paramAccount.getSex());
+            tUser.setAddress(paramAccount.getAddress());
             int resultModify = userService.Modify(tUser);
             if (resultModify > 0) {
                 //失败
                 result.setCode(1);
                 result.setMsg("更新成功！");
             } else {
-                result.setCode(-1);
                 result.setMsg("更新失败！");
             }
         }
 
         result.setData("");
         return result;
+    }
+
+    private ResultAccount ConvertUser2Account(TUser tUser) {
+        ResultAccount resultAccount = null;
+        if (tUser != null) {
+            resultAccount = new ResultAccount();
+            resultAccount.setUser_id(tUser.getId());
+            resultAccount.setNickname(tUser.getNickname() == null ? "" : tUser.getNickname());
+            resultAccount.setUsername(tUser.getUsername() == null ? "" : tUser.getUsername());
+            resultAccount.setMobile(tUser.getMobile() == null ? "" : tUser.getMobile());
+            resultAccount.setHeadpic(tUser.getHeadpic() == null ? "" : tUser.getHeadpic());
+            resultAccount.setSex(tUser.getSex() == null ? 0 : tUser.getSex());
+            resultAccount.setAddress(tUser.getAddress() == null ? "" : tUser.getAddress());
+            resultAccount.setUser_token(userService.GenerateUserToken(tUser));
+        }
+        return resultAccount;
     }
 }

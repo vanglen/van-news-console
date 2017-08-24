@@ -4,7 +4,7 @@ public class ParamTabNews extends ParamBase {
     private int city_id;
     private int catalog_id;
     private int type;
-    private long max_timestamp;
+    private long last_timestamp;
     private int count;
 
     public int getCity_id() {
@@ -31,12 +31,12 @@ public class ParamTabNews extends ParamBase {
         this.type = type;
     }
 
-    public long getMax_timestamp() {
-        return max_timestamp;
+    public long getLast_timestamp() {
+        return last_timestamp;
     }
 
-    public void setMax_timestamp(long max_timestamp) {
-        this.max_timestamp = max_timestamp;
+    public void setLast_timestamp(long last_timestamp) {
+        this.last_timestamp = last_timestamp;
     }
 
     public int getCount() {

@@ -39,7 +39,7 @@ public class TabController {
         ResultCommon<ResultTabMy> result = new ResultCommon<ResultTabMy>();
         ResultTabMy myTag = new ResultTabMy();
         myTag.setUsername("请登陆");
-        myTag.setHeadpic("/pic/default.jpg");
+        myTag.setHeadpic("img/userdefaultheadpic.jpg");
 
         if (paramTabMy.getUser_id() > 0 &&
                 paramTabMy.getUser_token() != null &&
@@ -50,22 +50,21 @@ public class TabController {
             //验证token
             String userToken = userService.GenerateUserToken(tUser);
             if (!userToken.equalsIgnoreCase(paramTabMy.getUser_token())) {
-                result.setCode(-1);
                 result.setMsg("非法用户！");
             } else {
+                result.setCode(1);
+
                 myTag.setUserid(tUser.getId());
-                myTag.setUsername(tUser.getUsername());
-                myTag.setNickname(tUser.getNickname());
-                myTag.setMobile(tUser.getMobile());
-                myTag.setSex(tUser.getSex());
-                myTag.setAddress(tUser.getAddress());
-                myTag.setHeadpic(tUser.getHeadpic());
-                if (tUser.getHeadpic() != null && tUser.getHeadpic().length() > 0)
-                    myTag.setHeadpic(tUser.getHeadpic());
+                myTag.setUsername(tUser.getUsername() == null ? "" : tUser.getUsername());
+                myTag.setNickname(tUser.getNickname() == null ? "" : tUser.getNickname());
+                myTag.setMobile(tUser.getMobile() == null ? "" : tUser.getMobile());
+                myTag.setSex(tUser.getSex() == null ? 0 : tUser.getSex());
+                myTag.setAddress(tUser.getAddress() == null ? "" : tUser.getAddress());
+//                if (tUser.getHeadpic() != null && tUser.getHeadpic().length() > 0)
+//                    myTag.setHeadpic(tUser.getHeadpic());
             }
         }
 
-        result.setCode(1);
         result.setData(myTag);
         return result;
     }
@@ -82,14 +81,14 @@ public class TabController {
         ResultCommon<ResultTabNews> result = new ResultCommon<ResultTabNews>();
         ResultTabNews newsTab = new ResultTabNews();
 
-        if (paramTabNews.getMax_timestamp() <= 0) {
-            paramTabNews.setMax_timestamp(new Date().getTime());
+        if (paramTabNews.getLast_timestamp() <= 0) {
+            paramTabNews.setLast_timestamp(new Date().getTime());
         }
         if (paramTabNews.getCount() <= 0) {
             paramTabNews.setCount(20);
         }
 
-        Date max_check_time = new Date(paramTabNews.getMax_timestamp());
+        Date max_check_time = new Date(paramTabNews.getLast_timestamp());
 
         List<TNews> newsList = newsService.ListByCheckTime(paramTabNews.getCount(), max_check_time);
         for (TNews news : newsList) {
@@ -105,6 +104,8 @@ public class TabController {
             item.setSource(news.getSource());
             item.setTags(news.getTags());
             item.setOpenschama("news/detail.do?news_id=" + news.getId());
+
+            newsTab.setLast_news_timestamp(news.getCheckTime().getTime());
 
             newsTab.getNews_data().add(item);
         }

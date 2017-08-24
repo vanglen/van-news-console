@@ -46,7 +46,7 @@ public class NetEaseHouseJob implements Job {
     private static Map<String, String> mapCatalog = new HashMap<String, String>();
     private static int current = 0;
     private static int step = 20;
-    private static int max_num_perday = 60;
+    private static int max_num_perday = 1000;
     private static String api_url = "http://c.m.163.com/nc/article/house/{0}/{1}-20.html";
     private static String api_detail_url = "https://c.m.163.com/nc/article/{0}/full.html";
     private static String api_url_city = "http://c.m.163.com/nc/local/city.html";
@@ -64,7 +64,7 @@ public class NetEaseHouseJob implements Job {
             }
         } catch (Exception ex) {
             ex.printStackTrace();
-            logger.error("NetEaseHouseJob Error:" + ex.getMessage());
+            logger.error("NetEaseHouseJob Error:" + ex.getMessage(), ex);
         }
     }
 
@@ -90,9 +90,11 @@ public class NetEaseHouseJob implements Job {
     }
 
     private static Map<String, String> getDataCity() {
+
         Map<String, String> result = new HashMap<>();
         //获取当前城市列表
         List<TNewsArea> tNewsAreaList = NewsProvider.ListNewsAreaUsable();
+
         //抓取远程城市列表
         String apiResult = HttpRequestUtil.sendGet(api_url_city, "");
         if (apiResult != null && !apiResult.equals("")) {
@@ -108,13 +110,13 @@ public class NetEaseHouseJob implements Job {
                             String cityKey = cityKeys.next();
                             JSONArray letterCitys = (JSONArray) apiLetterCitys.get(cityKey);
                             Iterator<Object> letterCity = letterCitys.iterator();
-                            while(letterCity.hasNext()){
-                                JSONObject element  = (JSONObject)letterCity.next();
+                            while (letterCity.hasNext()) {
+                                JSONObject element = (JSONObject) letterCity.next();
                                 String str_city_name = element.get("c").toString();
                                 String str_city_area_id = element.get("m").toString();
                                 boolean bo_city_status = element.containsKey("h") && Boolean.parseBoolean(element.get("h").toString());
-
-                                List<TNewsArea> filterNewsAreaList = tNewsAreaList.stream().filter(x -> x.getAreaId().equals(str_city_area_id)).collect(Collectors.toList());
+                                //logger.info("getDataCity TRACE:" + str_city_area_id + JSON.toJSONString(tNewsAreaList));
+                                List<TNewsArea> filterNewsAreaList = (tNewsAreaList == null || tNewsAreaList.size() <= 0) ? null : tNewsAreaList.stream().filter(x -> x.getAreaId().equals(str_city_area_id)).collect(Collectors.toList());
                                 //添加城市
                                 if (filterNewsAreaList == null || filterNewsAreaList.size() == 0) {
                                     TNewsArea tNewsArea = new TNewsArea();
@@ -160,30 +162,32 @@ public class NetEaseHouseJob implements Job {
                 if (listNewsItem != null && listNewsItem.size() > 0) {
                     for (NeteaseHouseNewsItem newsItem : listNewsItem) {
 
-                        //构造实体
-                        TNews tNews = new TNews();
-                        tNews.setTitle(newsItem.getTitle());
-                        tNews.setDigest(newsItem.getDigest());
-                        tNews.setPic(newsItem.getImgsrc());
-                        tNews.setSource(newsItem.getSource());
-                        tNews.setTags("房产");
-                        tNews.setType(10);
-                        tNews.setCategoryId(0);
-                        tNews.setCategoryName("房产");
-                        tNews.setCityAreaId(areaKey);
-                        tNews.setCityName(areaValue);
-                        tNews.setContent(GetArticleInfo(newsItem.getDocid()));
-                        tNews.setCountComment(0);
-                        tNews.setCountLike(0);
-                        tNews.setCountBrowser(0);
-                        tNews.setPublishTime(newsItem.getPtime());
-                        tNews.setStatus(0);
-                        tNews.setSourceDocid(newsItem.getDocid());
-                        tNews.setSourceUrl(newsItem.getUrl());
-                        tNews.setSourceWebsite("163");
-                        tNews.setCreatedtime(new Date());
+                        if (newsItem.getBoardid().equals("house_bbs") || newsItem.getBoardid().equals("gzhouse_bbs") || newsItem.getSkipType().equals("doc")) {
+                            //构造实体
+                            TNews tNews = new TNews();
+                            tNews.setTitle(newsItem.getTitle());
+                            tNews.setDigest(newsItem.getDigest());
+                            tNews.setPic(newsItem.getImgsrc());
+                            tNews.setSource(newsItem.getSource());
+                            tNews.setTags("房产");
+                            tNews.setType(10);
+                            tNews.setCategoryId(0);
+                            tNews.setCategoryName("房产");
+                            tNews.setCityAreaId(areaKey);
+                            tNews.setCityName(areaValue);
+                            tNews.setContent(GetArticleInfo(newsItem.getDocid()));
+                            tNews.setCountComment(0);
+                            tNews.setCountLike(0);
+                            tNews.setCountBrowser(0);
+                            tNews.setPublishTime(newsItem.getPtime());
+                            tNews.setStatus(0);
+                            tNews.setSourceDocid(newsItem.getDocid());
+                            tNews.setSourceUrl(newsItem.getUrl());
+                            tNews.setSourceWebsite("163");
+                            tNews.setCreatedtime(new Date());
 
-                        int resultDB = NewsProvider.AddNews(tNews);
+                            int resultDB = NewsProvider.AddNews(tNews);
+                        }
                     }
                 }
             }

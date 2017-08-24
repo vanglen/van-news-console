@@ -126,6 +126,7 @@
     <include refid="Blob_Column_List" />
     from t_news
     where status=1 and check_time &lt; #{arg0,jdbcType=TIMESTAMP}
+    order by check_time desc, id desc
     limit #{arg1,jdbcType=INTEGER}
   </select>
 </mapper>

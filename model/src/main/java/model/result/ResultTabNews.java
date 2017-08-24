@@ -4,7 +4,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ResultTabNews extends ResultBase {
+    private int count = 0;
+    private long last_news_timestamp = 0;
     private List<ResultTabNewsItem> news_data = new ArrayList<ResultTabNewsItem>();
+
+    public int getCount() {
+        return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
+    }
+
+    public long getLast_news_timestamp() {
+        return last_news_timestamp;
+    }
+
+    public void setLast_news_timestamp(long last_news_timestamp) {
+        this.last_news_timestamp = last_news_timestamp;
+    }
 
     public List<ResultTabNewsItem> getNews_data() {
         return news_data;
