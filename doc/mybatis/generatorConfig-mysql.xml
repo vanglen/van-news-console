@@ -18,7 +18,7 @@
             <property name="forceBigDecimals" value="false"/>
         </javaTypeResolver>
 
-        <javaModelGenerator targetPackage="model.newsarea" targetProject="D:\Work\src\git\van-news-console\model\src\main\java">
+        <javaModelGenerator targetPackage="model.comment" targetProject="D:\Work\src\git\van-news-console\model\src\main\java">
             <property name="enableSubPackages" value="true"/>
             <property name="trimStrings" value="true"/>
         </javaModelGenerator>
@@ -32,7 +32,7 @@
             <property name="enableSubPackages" value="true"/>
         </javaClientGenerator>
 
-        <table tableName="t_news_area">
+        <table tableName="t_comment">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
 

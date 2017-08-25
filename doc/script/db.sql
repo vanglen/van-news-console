@@ -52,6 +52,7 @@ CREATE TABLE `t_comment` (
   `user_name` varchar(45) DEFAULT NULL,
   `user_headpic` varchar(200) DEFAULT NULL,
   `content` text,
+  `status` int(11) DEFAULT NULL,
   `createdtime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='评论表';

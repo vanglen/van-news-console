@@ -165,12 +165,13 @@ public class NetEaseHouseJob implements Job {
     }
 
     private static void getDataNews(String areaKey, String areaValue, int page) {
-        logger.info("开始读取url");
+        String url = MessageFormat.format(api_url, Common.encodeBase64(areaValue, "utf-8"), page);
+        logger.info("开始读取url:" + url);
         boolean has_more = false;
         String result = "";
         try {
             logger.info("请求资讯列表开始163。");
-            result = HttpRequestUtil.sendGet(MessageFormat.format(api_url, Common.encodeBase64(areaValue, "utf-8"), page), "");
+            result = HttpRequestUtil.sendGet(url, "");
             logger.info("请求资讯列表结束163。返回字节：" + result.length());
 //            logger.info("ApiResult:" + result);
             if (result != null && !result.equals("")) {

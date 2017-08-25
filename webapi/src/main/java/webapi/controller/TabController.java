@@ -1,6 +1,7 @@
 package webapi.controller;
 
 import common.util.DateUtil;
+import model.enums.EnumApiResultCode;
 import model.news.TNews;
 import model.param.ParamTabMy;
 import model.param.ParamTabNews;
@@ -68,7 +69,7 @@ public class TabController {
             if (!userToken.equalsIgnoreCase(paramTabMy.getUser_token())) {
                 result.setMsg("非法用户！");
             } else {
-                result.setCode(1);
+                result.setCode(EnumApiResultCode.SUCCESS.getValue());
 
                 myTag.setUserid(tUser.getId());
                 myTag.setUsername(tUser.getUsername() == null ? "" : tUser.getUsername());
@@ -136,7 +137,7 @@ public class TabController {
         }
 
         newsTab.setCount(newsTab.getNews_data().size());
-        result.setCode(1);
+        result.setCode(EnumApiResultCode.SUCCESS.getValue());
         result.setData(newsTab);
         return result;
     }

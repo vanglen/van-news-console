@@ -1,5 +1,6 @@
 package webapi.controller;
 
+import model.enums.EnumApiResultCode;
 import model.param.ParamAccount;
 import model.result.ResultAccount;
 import model.result.ResultAccountLogin;
@@ -45,7 +46,7 @@ public class AccountController {
             user.setPassword(paramAccount.getPassword());
             int resultAdd = userService.Add(user);
             if (resultAdd > 0) {
-                result.setCode(1);
+                result.setCode(EnumApiResultCode.SUCCESS.getValue());
                 result.setMsg("注册成功！");
                 TUser resultUser = userService.GetByUsernameAndPassword(paramAccount.getUsername(), paramAccount.getPassword());
                 resultAccount = ConvertUser2Account(resultUser);
@@ -79,7 +80,7 @@ public class AccountController {
         } else {
             TUser resultUser = userService.GetByUsernameAndPassword(paramAccount.getUsername(), paramAccount.getPassword());
             if (resultUser != null && resultUser.getId() > 0) {
-                result.setCode(1);
+                result.setCode(EnumApiResultCode.SUCCESS.getValue());
                 result.setMsg("登录成功！");
                 resultAccount = ConvertUser2Account(resultUser);
             } else {
@@ -107,7 +108,7 @@ public class AccountController {
             int resultModify = userService.Modify(tUser);
             if (resultModify > 0) {
                 //失败
-                result.setCode(1);
+                result.setCode(EnumApiResultCode.SUCCESS.getValue());
                 result.setMsg("更新成功！");
             } else {
                 result.setMsg("更新失败！");
