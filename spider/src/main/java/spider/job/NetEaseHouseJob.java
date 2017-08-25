@@ -62,6 +62,7 @@ public class NetEaseHouseJob implements Job {
                         getDataNews(key, mapCatalog.get(key), current);
                         current += step;
                     } while (max_num_perday > current);
+                    current = 0;
                 }
             } else {
                 logger.info("抓取城市列表为空。");
@@ -165,7 +166,7 @@ public class NetEaseHouseJob implements Job {
     }
 
     private static void getDataNews(String areaKey, String areaValue, int page) {
-        String url = MessageFormat.format(api_url, Common.encodeBase64(areaValue, "utf-8"), page);
+        String url = MessageFormat.format(api_url, Common.encodeBase64(areaValue, "utf-8"), String.valueOf(page));
         logger.info("开始读取url:" + url);
         boolean has_more = false;
         String result = "";
