@@ -8,5 +8,5 @@ import java.util.Date;
 import java.util.List;
 
 public interface TNewsExtendMapper {
-    List<TNews> selectByChecktime4Page(Date check_time, int count);
+    List<TNews> selectByChecktime4Page(Date check_time, int city_id, int count);
 }

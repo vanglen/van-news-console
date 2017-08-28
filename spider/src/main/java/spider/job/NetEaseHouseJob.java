@@ -39,31 +39,74 @@ public class NetEaseHouseJob implements Job {
 
     public NetEaseHouseJob() {
         mapCatalog.put("110000", "北京");
+        init_map_log();
+    }
+
+    private void init_map_log() {
+        map_log.clear();
+        map_log.put("city_id", 0);
+        map_log.put("city_id", "");
+        map_log.put("city_name", "");
+        map_log.put("city_code", "");
+        map_log.put("http_request_ok", 0);
+        map_log.put("http_request_failed", 0);
+        map_log.put("db_ok", 0);
+        map_log.put("db_failed", 0);
     }
 
     private static Logger logger = LoggerFactory.getLogger(ToutiaoJob.class);
 
     private static Map<String, String> mapCatalog = new HashMap<String, String>();
+    private static List<TNewsArea> listCities = new ArrayList<>();
     private static int current = 0;
     private static int step = 20;
-    private static int max_num_perday = 1000;
+    private static int max_num_perday_percity = 60;
+    //抓取几天内的数据
+    private static int max_day = 1;
+    //抓取的数据中资讯最早的时间
+    private static Date min_datetime = null;
     private static String api_url = "http://c.m.163.com/nc/article/house/{0}/{1}-20.html";
     private static String api_detail_url = "https://c.m.163.com/nc/article/{0}/full.html";
     private static String api_url_city = "http://c.m.163.com/nc/local/city.html";
+    private static Map<String, Object> map_log = new HashMap<>();
 
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         try {
+            Date now = new Date();
+            min_datetime = new Date();
             //更新城市列表
-            mapCatalog = getDataCityUsable();
-            if (mapCatalog != null && mapCatalog.size() > 0) {
-                Set<String> keys = mapCatalog.keySet();
-                for (String key : keys) {
+            listCities = getDataCityUsable();
+            if (listCities != null && listCities.size() > 0) {
+                for (TNewsArea area : listCities) {
+                    map_log.put("city_id", area.getId());
+                    map_log.put("city_areaid", area.getAreaId());
+                    map_log.put("city_name", area.getName());
+                    map_log.put("city_code", Common.encodeBase64(area.getName(), "utf-8"));
                     do {
-                        getDataNews(key, mapCatalog.get(key), current);
+                        getDataNews(area, current);
                         current += step;
-                    } while (max_num_perday > current);
+                    } while ((now.getTime() - min_datetime.getTime() < 86400000)
+                            && max_num_perday_percity > current);
                     current = 0;
+                    //打印统计信息
+                    logger.info("城市-" + area.getName() + "：" + JSON.toJSONString(map_log));
+                    init_map_log();
                 }
+//                Set<String> keys = mapCatalog.keySet();
+//                for (String key : keys) {
+//                    map_log.put("city_id", key);
+//                    map_log.put("city_name", mapCatalog.get(key));
+//                    map_log.put("city_code", Common.encodeBase64(mapCatalog.get(key), "utf-8"));
+//                    do {
+//                        getDataNews(key, mapCatalog.get(key), current);
+//                        current += step;
+//                    } while ((now.getTime() - min_datetime.getTime() < 86400000)
+//                            && max_num_perday_percity > current);
+//                    current = 0;
+//                    //打印统计信息
+//                    logger.info("城市：" + mapCatalog.get(key) + "抓取信息：" + JSON.toJSONString(map_log));
+//                    init_map_log();
+//                }
             } else {
                 logger.info("抓取城市列表为空。");
             }
@@ -83,14 +126,14 @@ public class NetEaseHouseJob implements Job {
 //                    String val = mapCatalog.get(key);
 //                    getDataNews(val, mapCatalog.get(key), current);
 //                    current += step;
-//                } while (max_num_perday > current);
+//                } while (max_num_perday_percity > current);
 //            }
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
         }
     }
 
-    private static Map<String, String> getDataCityUsable() {
+    private static List<TNewsArea> getDataCityUsable() {
         List<TNewsArea> tNewsAreaList = NewsProvider.ListNewsAreaUsable();
         if (tNewsAreaList == null || tNewsAreaList.size() <= 0) {
             logger.info("抓取城市列表为空。");
@@ -100,7 +143,8 @@ public class NetEaseHouseJob implements Job {
             //重新查询
             tNewsAreaList = NewsProvider.ListNewsAreaUsable();
         }
-        return ConvertCityList2Map(tNewsAreaList);
+        return tNewsAreaList;
+//        return ConvertCityList2Map(tNewsAreaList);
     }
 
     private static void getDataCityRemote() {
@@ -165,22 +209,27 @@ public class NetEaseHouseJob implements Job {
         return result;
     }
 
-    private static void getDataNews(String areaKey, String areaValue, int page) {
-        String url = MessageFormat.format(api_url, Common.encodeBase64(areaValue, "utf-8"), String.valueOf(page));
-        logger.info("开始读取url:" + url);
+    private static void getDataNews(TNewsArea area, int page) {
+        String url = MessageFormat.format(api_url, Common.encodeBase64(area.getName(), "utf-8"), String.valueOf(page));
+//        logger.info("开始读取url:" + url);
         boolean has_more = false;
         String result = "";
         try {
-            logger.info("请求资讯列表开始163。");
+//            logger.info("请求资讯列表开始163。");
             result = HttpRequestUtil.sendGet(url, "");
-            logger.info("请求资讯列表结束163。返回字节：" + result.length());
+//            logger.info("请求资讯列表结束163。返回字节：" + result.length());
+            map_log.put("http_request_ok", ((int) map_log.get("http_request_ok")) + 1);
 //            logger.info("ApiResult:" + result);
             if (result != null && !result.equals("")) {
                 JSONObject apiResult = JSON.parseObject(result);
-                List<NeteaseHouseNewsItem> listNewsItem = JSON.parseArray(apiResult.get(areaValue).toString(), NeteaseHouseNewsItem.class);
+                List<NeteaseHouseNewsItem> listNewsItem = JSON.parseArray(apiResult.get(area.getName()).toString(), NeteaseHouseNewsItem.class);
 
                 if (listNewsItem != null && listNewsItem.size() > 0) {
                     for (NeteaseHouseNewsItem newsItem : listNewsItem) {
+
+                        if (min_datetime.compareTo(newsItem.getPtime()) > 0) {
+                            min_datetime = newsItem.getPtime();
+                        }
 
                         if ("house_bbs".equalsIgnoreCase(newsItem.getBoardid()) ||
                                 "gzhouse_bbs".equals(newsItem.getBoardid()) ||
@@ -195,8 +244,9 @@ public class NetEaseHouseJob implements Job {
                             tNews.setType(10);
                             tNews.setCategoryId(0);
                             tNews.setCategoryName("房产");
-                            tNews.setCityAreaId(areaKey);
-                            tNews.setCityName(areaValue);
+                            tNews.setCityId(area.getId());
+                            tNews.setCityAreaId(area.getAreaId());
+                            tNews.setCityName(area.getName());
                             tNews.setContent(GetArticleInfo(newsItem.getDocid()));
                             tNews.setCountComment(0);
                             tNews.setCountLike(0);
@@ -208,9 +258,14 @@ public class NetEaseHouseJob implements Job {
                             tNews.setSourceWebsite("163");
                             tNews.setCreatedtime(new Date());
 
-                            logger.info("添加资讯到数据库开始。");
+//                            logger.info("添加资讯到数据库开始。");
                             int resultDB = NewsProvider.AddNews(tNews);
-                            logger.info("添加资讯到数据库结束。结果：" + resultDB);
+//                            logger.info("添加资讯到数据库结束。结果：" + resultDB);
+                            if (resultDB > 0) {
+                                map_log.put("db_ok", ((int) map_log.get("db_ok") + 1));
+                            } else {
+                                map_log.put("db_failed", ((int) map_log.get("db_failed") + 1));
+                            }
                         }
                     }
                 }
@@ -231,7 +286,7 @@ public class NetEaseHouseJob implements Job {
         if (url.length() > 0) {
             try {
                 String result = HttpRequestUtil.sendGet(url, "");
-                logger.info("ApiResult:" + result);
+                //logger.info("ApiResult:" + result);
                 if (result != null && !result.equals("")) {
                     JSONObject apiResult = JSON.parseObject(result);
                     Map doc = ((Map) apiResult.get(docId));

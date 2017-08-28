@@ -104,10 +104,13 @@ public class TabController {
         if (paramTabNews.getCount() <= 0) {
             paramTabNews.setCount(20);
         }
+        if (paramTabNews.getCity_id() <= 0) {
+            paramTabNews.setCity_id(399);//北京
+        }
 
         Date last_check_time = new Date(paramTabNews.getLast_news_timestamp());
 
-        List<TNews> newsList = newsService.ListByCheckTime(paramTabNews.getCount(), last_check_time);
+        List<TNews> newsList = newsService.ListByCheckTime(paramTabNews.getCount(), paramTabNews.getCity_id(), last_check_time);
         for (TNews news : newsList) {
             ResultTabNews.ResultTabNewsItem item = newsTab.new ResultTabNewsItem();
             item.setCount_browser(news.getCountBrowser());

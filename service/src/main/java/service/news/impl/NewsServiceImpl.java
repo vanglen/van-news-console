@@ -20,9 +20,9 @@ public class NewsServiceImpl implements NewsService {
     @Resource
     private TNewsExtendMapper tNewsExtendMapper;
 
-    public List<TNews> ListByCheckTime(int count, Date last_check_time) {
+    public List<TNews> ListByCheckTime(int count, int city_id, Date last_check_time) {
 //        return tNewsExtendMapper.selectByChecktime4Page(DateUtil.getDateTime(max_check_time,"yyyy-MM-dd HH:mm:ss"), count);
-        return tNewsExtendMapper.selectByChecktime4Page(last_check_time, count);
+        return tNewsExtendMapper.selectByChecktime4Page(last_check_time, city_id, count);
     }
 
     public TNews GetById(int id) {

@@ -9,11 +9,12 @@ public interface NewsService {
     /**
      * 获取资讯列表
      *
-     * @param count 获取数量
+     * @param count           获取数量
+     * @param city_id         城市ID
      * @param last_check_time 最大时间缀
      * @return 资讯列表
      */
-    List<TNews> ListByCheckTime(int count, Date last_check_time);
+    List<TNews> ListByCheckTime(int count, int city_id, Date last_check_time);
 
     /**
      * 根据ID获取资讯信息
