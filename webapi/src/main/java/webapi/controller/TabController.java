@@ -124,10 +124,10 @@ public class TabController {
             item.setSource(news.getSource());
             item.setTags(news.getTags());
             String openschema = null;
-            String url = MessageFormat.format(app_url_newshost + app_url_newsdetail, news.getId());
+            String url = MessageFormat.format(app_url_newshost + app_url_newsdetail, String.valueOf(news.getId()));
             item.setUrl(url);
             try {
-                openschema = MessageFormat.format(app_url_openschemapre, URLEncoder.encode(url, "UTF-8"));
+                openschema = MessageFormat.format(app_url_openschemapre, URLEncoder.encode(url, "UTF-8"), String.valueOf(news.getId()), URLEncoder.encode(news.getTitle(), "UTF-8"));
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
                 logger.error("openshema编码出错：" + e.getMessage(), e);

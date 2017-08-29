@@ -6,6 +6,7 @@ import model.result.ResultAccount;
 import model.result.ResultAccountLogin;
 import model.result.ResultCommon;
 import model.user.TUser;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +21,10 @@ public class AccountController {
 
     @Resource
     private UserService userService;
+    @Value("${app.url.newshost}")
+    private String app_url_newshost;
+    @Value("${app.url.userdefaultimg}")
+    private String app_url_userdefaultimg;
 
     /**
      * 注册
@@ -127,7 +132,7 @@ public class AccountController {
             resultAccount.setNickname(tUser.getNickname() == null ? "" : tUser.getNickname());
             resultAccount.setUsername(tUser.getUsername() == null ? "" : tUser.getUsername());
             resultAccount.setMobile(tUser.getMobile() == null ? "" : tUser.getMobile());
-            resultAccount.setHeadpic(tUser.getHeadpic() == null ? "" : tUser.getHeadpic());
+            resultAccount.setHeadpic(tUser.getHeadpic() == null ? app_url_newshost + app_url_userdefaultimg : tUser.getHeadpic());
             resultAccount.setSex(tUser.getSex() == null ? 0 : tUser.getSex());
             resultAccount.setAddress(tUser.getAddress() == null ? "" : tUser.getAddress());
             resultAccount.setUser_token(userService.GenerateUserToken(tUser));
