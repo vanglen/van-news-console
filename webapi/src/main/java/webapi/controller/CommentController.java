@@ -7,14 +7,14 @@ import model.enums.EnumCommentType;
 import model.news.TNews;
 import model.param.ParamCommentAdd;
 import model.param.ParamCommentList;
+import model.result.ResultCommentItem;
 import model.result.ResultCommentList;
 import model.result.ResultCommon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import service.comment.CommentService;
 import service.news.NewsService;
 
@@ -42,10 +42,10 @@ public class CommentController {
     private String app_url_userdefaultimg;
 
     @ResponseBody
-    @RequestMapping("publish")
+    @RequestMapping(value = "publish", method = RequestMethod.POST)
     public ResultCommon Add(ParamCommentAdd paramCommentAdd) {
-        ResultCommon<String> resultCommon = new ResultCommon<String>();
-
+        ResultCommon<ResultCommentItem> resultCommon = new ResultCommon<ResultCommentItem>();
+        ResultCommentItem resultCommentItem = new ResultCommentItem();
         //TODO: 验证用户token
 
         if (paramCommentAdd.getTo_id() <= 0 ||
@@ -64,20 +64,29 @@ public class CommentController {
             if (resultAdd > 0) {
                 resultCommon.setCode(EnumApiResultCode.SUCCESS.getValue());
                 resultCommon.setMsg("评论成功！");
+
+                resultCommentItem.setComment_id(tComment.getId() == null ? 0 : tComment.getId());
+                resultCommentItem.setComment_content(tComment.getContent() == null ? "" : tComment.getContent());
+                resultCommentItem.setComment_datetime(DateUtil.getDateTime(tComment.getCreatedtime(), "yyyy-MM-dd HH:mm:ss"));
+                resultCommentItem.setComment_is_self(1);
+                resultCommentItem.setTo_id(tComment.getToId() == null ? 0 : tComment.getToId());
+                resultCommentItem.setTo_type(tComment.getToType() == null ? 0 : tComment.getToType());
+                resultCommentItem.setUser_id(tComment.getUserId() == null ? 0 : tComment.getUserId());
+                resultCommentItem.setUser_name(tComment.getUserName() == null ? "" : tComment.getUserName());
+//                resultCommentItem.setUser_headpic(comment.getUserHeadpic());
+                resultCommentItem.setUser_headpic(app_url_newshost + app_url_userdefaultimg);
             }
         }
 
-        resultCommon.setData("");
+        resultCommon.setData(resultCommentItem);
         return resultCommon;
     }
 
     @ResponseBody
     @RequestMapping("list")
     public ResultCommon List4Page(ParamCommentList paramCommentList) {
-        ResultCommon<ResultCommentList<ResultCommentList.ResultCommentNewsItem>> resultCommon
-                = new ResultCommon<ResultCommentList<ResultCommentList.ResultCommentNewsItem>>();
-        ResultCommentList<ResultCommentList.ResultCommentNewsItem> resultCommentList
-                = new ResultCommentList<ResultCommentList.ResultCommentNewsItem>();
+        ResultCommon<ResultCommentList> resultCommon = new ResultCommon<ResultCommentList>();
+        ResultCommentList resultCommentList = new ResultCommentList();
 
         if (paramCommentList.getTo_id() <= 0) {
             resultCommon.setMsg("参数错误！");
@@ -92,8 +101,7 @@ public class CommentController {
             Date last_comment_datetime = new Date(paramCommentList.getLast_comment_timestamp());
 
             if (paramCommentList.getTo_type() == EnumCommentType.ARTICLE.getValue()) {
-                ResultCommentList<ResultCommentList.ResultCommentNewsItem>.ResultCommentNewsItem newsItem
-                        = resultCommentList.new ResultCommentNewsItem();
+                ResultCommentList.ResultCommentNewsItem newsItem = resultCommentList.new ResultCommentNewsItem();
                 //获取资讯信息
                 TNews tNews = newsService.GetById(paramCommentList.getTo_id());
                 if (tNews != null) {
@@ -105,11 +113,10 @@ public class CommentController {
                 resultCommentList.setTo_data(newsItem);
             }
 
-            List<ResultCommentList<ResultCommentList.ResultCommentNewsItem>.ResultCommentItem> comment_data
-                    = resultCommentList.getComment_data();
+            List<ResultCommentItem> comment_data = resultCommentList.getComment_data();
             List<TComment> commentList = commentService.select4Page(paramCommentList.getCount(), last_comment_datetime);
             for (TComment comment : commentList) {
-                ResultCommentList.ResultCommentItem resultCommentItem = resultCommentList.new ResultCommentItem();
+                ResultCommentItem resultCommentItem = new ResultCommentItem();
                 resultCommentItem.setComment_id(comment.getId() == null ? 0 : comment.getId());
                 resultCommentItem.setComment_content(comment.getContent() == null ? "" : comment.getContent());
                 resultCommentItem.setComment_datetime(DateUtil.getDateTime(comment.getCreatedtime(), "yyyy-MM-dd HH:mm:ss"));

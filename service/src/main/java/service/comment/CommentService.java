@@ -7,6 +7,11 @@ import java.util.List;
 
 public interface CommentService {
     /**
+     * 根据ID获取评论
+     */
+    TComment getById(int id);
+
+    /**
      * 发表评论
      */
     int add(TComment tComment);

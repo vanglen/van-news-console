@@ -18,6 +18,10 @@ public class CommentServiceImpl implements CommentService {
     @Resource
     private TCommentExtendMapper tCommentExtendMapper;
 
+    public TComment getById(int id) {
+        return tCommentMapper.selectByPrimaryKey(id);
+    }
+
     public int add(TComment tComment) {
         return tCommentMapper.insert(tComment);
     }
