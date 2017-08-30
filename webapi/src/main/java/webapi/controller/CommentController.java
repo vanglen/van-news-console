@@ -10,6 +10,7 @@ import model.param.ParamCommentList;
 import model.result.ResultCommentItem;
 import model.result.ResultCommentList;
 import model.result.ResultCommon;
+import model.user.TUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,11 +18,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import service.comment.CommentService;
 import service.news.NewsService;
+import service.user.UserService;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by Administrator on 2017/8/24.
@@ -32,6 +35,8 @@ public class CommentController {
 
     private Logger logger = LoggerFactory.getLogger(CommentController.class);
 
+    @Resource
+    private UserService userService;
     @Resource
     private NewsService newsService;
     @Resource
@@ -46,6 +51,8 @@ public class CommentController {
     public ResultCommon Add(ParamCommentAdd paramCommentAdd) {
         ResultCommon<ResultCommentItem> resultCommon = new ResultCommon<ResultCommentItem>();
         ResultCommentItem resultCommentItem = new ResultCommentItem();
+        TUser tUser = new TUser();
+
         //TODO: 验证用户token
 
         if (paramCommentAdd.getTo_id() <= 0 ||
@@ -53,11 +60,20 @@ public class CommentController {
                 paramCommentAdd.getContent().length() <= 0) {
             resultCommon.setMsg("参数错误！");
         } else {
+            if (paramCommentAdd.getUser_id() > 0) {
+                tUser = userService.GetById(paramCommentAdd.getUser_id());
+            }
+
             TComment tComment = new TComment();
             tComment.setToId(paramCommentAdd.getTo_id());
             tComment.setToType(paramCommentAdd.getTo_type());
             tComment.setContent(paramCommentAdd.getContent());
             tComment.setUserId(paramCommentAdd.getUser_id());
+            if (tUser != null && tUser.getId() != null && tUser.getId() > 0) {
+                tComment.setUserName((tUser.getNickname() == null || tUser.getNickname().length() <= 0) ? tUser.getUsername() : tUser.getNickname());
+            } else {
+                tComment.setUserName("游客" + UUID.randomUUID().toString().substring(0, 4));
+            }
             tComment.setStatus(1);
             tComment.setCreatedtime(new Date());
             int resultAdd = commentService.add(tComment);
@@ -71,9 +87,13 @@ public class CommentController {
                 resultCommentItem.setComment_is_self(1);
                 resultCommentItem.setTo_id(tComment.getToId() == null ? 0 : tComment.getToId());
                 resultCommentItem.setTo_type(tComment.getToType() == null ? 0 : tComment.getToType());
-                resultCommentItem.setUser_id(tComment.getUserId() == null ? 0 : tComment.getUserId());
-                resultCommentItem.setUser_name(tComment.getUserName() == null ? "" : tComment.getUserName());
+                if (tUser != null && tUser.getId() != null && tUser.getId() > 0) {
+                    resultCommentItem.setUser_id(tUser.getId());
+                    resultCommentItem.setUser_name((tUser.getNickname() == null || tUser.getNickname().length() <= 0) ? tUser.getUsername() : tUser.getNickname());
 //                resultCommentItem.setUser_headpic(comment.getUserHeadpic());
+                } else {
+                    resultCommentItem.setUser_name(tComment.getUserName());
+                }
                 resultCommentItem.setUser_headpic(app_url_newshost + app_url_userdefaultimg);
             }
         }
