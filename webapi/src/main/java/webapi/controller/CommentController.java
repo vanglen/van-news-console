@@ -52,24 +52,29 @@ public class CommentController {
         ResultCommon<ResultCommentItem> resultCommon = new ResultCommon<ResultCommentItem>();
         ResultCommentItem resultCommentItem = new ResultCommentItem();
         TUser tUser = new TUser();
+        boolean is_user_whenlogin = false;
 
-        //TODO: 验证用户token
+        //如果用户已登录，验证用户token
+        if (paramCommentAdd.getUser_id() > 0) {
+            tUser = userService.GetById(paramCommentAdd.getUser_id());
+            String veryfy_user_token = userService.GenerateUserToken(tUser);
+            is_user_whenlogin = veryfy_user_token.equals(paramCommentAdd.getUser_token());
+        }
 
-        if (paramCommentAdd.getTo_id() <= 0 ||
+        if (!is_user_whenlogin) {
+            resultCommon.setMsg("用户验证错误！");
+        } else if (paramCommentAdd.getTo_id() <= 0 ||
                 paramCommentAdd.getContent() == null ||
                 paramCommentAdd.getContent().length() <= 0) {
             resultCommon.setMsg("参数错误！");
         } else {
-            if (paramCommentAdd.getUser_id() > 0) {
-                tUser = userService.GetById(paramCommentAdd.getUser_id());
-            }
 
             TComment tComment = new TComment();
             tComment.setToId(paramCommentAdd.getTo_id());
             tComment.setToType(paramCommentAdd.getTo_type());
             tComment.setContent(paramCommentAdd.getContent());
             tComment.setUserId(paramCommentAdd.getUser_id());
-            if (tUser != null && tUser.getId() != null && tUser.getId() > 0) {
+            if (is_user_whenlogin) {
                 tComment.setUserName((tUser.getNickname() == null || tUser.getNickname().length() <= 0) ? tUser.getUsername() : tUser.getNickname());
             } else {
                 tComment.setUserName("游客" + UUID.randomUUID().toString().substring(0, 4));
@@ -87,7 +92,7 @@ public class CommentController {
                 resultCommentItem.setComment_is_self(1);
                 resultCommentItem.setTo_id(tComment.getToId() == null ? 0 : tComment.getToId());
                 resultCommentItem.setTo_type(tComment.getToType() == null ? 0 : tComment.getToType());
-                if (tUser != null && tUser.getId() != null && tUser.getId() > 0) {
+                if (is_user_whenlogin) {
                     resultCommentItem.setUser_id(tUser.getId());
                     resultCommentItem.setUser_name((tUser.getNickname() == null || tUser.getNickname().length() <= 0) ? tUser.getUsername() : tUser.getNickname());
 //                resultCommentItem.setUser_headpic(comment.getUserHeadpic());
@@ -134,7 +139,7 @@ public class CommentController {
             }
 
             List<ResultCommentItem> comment_data = resultCommentList.getComment_data();
-            List<TComment> commentList = commentService.select4Page(paramCommentList.getCount(), last_comment_datetime);
+            List<TComment> commentList = commentService.select4Page(paramCommentList.getTo_id(), paramCommentList.getTo_type(), 1, last_comment_datetime, paramCommentList.getCount());
             for (TComment comment : commentList) {
                 ResultCommentItem resultCommentItem = new ResultCommentItem();
                 resultCommentItem.setComment_id(comment.getId() == null ? 0 : comment.getId());

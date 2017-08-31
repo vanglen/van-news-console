@@ -118,8 +118,8 @@
     ,
     <include refid="Blob_Column_List" />
     from t_comment
-    where status=1 and createdtime &lt; #{arg0,jdbcType=TIMESTAMP}
+    where to_id=#{arg0,jdbcType=INTEGER} and to_type=#{arg1,jdbcType=INTEGER} and status=#{arg2,jdbcType=INTEGER} and createdtime &lt; #{arg3,jdbcType=TIMESTAMP}
     order by createdtime desc, id desc
-    limit #{arg1,jdbcType=INTEGER}
+    limit #{arg4,jdbcType=INTEGER}
   </select>
 </mapper>

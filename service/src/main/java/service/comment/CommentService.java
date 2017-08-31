@@ -19,5 +19,5 @@ public interface CommentService {
     /**
      * 获取评论列表
      */
-    List<TComment> select4Page(int count, Date last_datetime);
+    List<TComment> select4Page(int to_id, int to_type, int status, Date last_datetime, int count);
 }

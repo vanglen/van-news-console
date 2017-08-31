@@ -37,23 +37,6 @@ import java.util.stream.Collectors;
  */
 public class NetEaseHouseJob implements Job {
 
-    public NetEaseHouseJob() {
-        mapCatalog.put("110000", "北京");
-        init_map_log();
-    }
-
-    private void init_map_log() {
-        map_log.clear();
-        map_log.put("city_id", 0);
-        map_log.put("city_id", "");
-        map_log.put("city_name", "");
-        map_log.put("city_code", "");
-        map_log.put("http_request_ok", 0);
-        map_log.put("http_request_failed", 0);
-        map_log.put("db_ok", 0);
-        map_log.put("db_failed", 0);
-    }
-
     private static Logger logger = LoggerFactory.getLogger(ToutiaoJob.class);
 
     private static Map<String, String> mapCatalog = new HashMap<String, String>();
@@ -69,6 +52,34 @@ public class NetEaseHouseJob implements Job {
     private static String api_detail_url = "https://c.m.163.com/nc/article/{0}/full.html";
     private static String api_url_city = "http://c.m.163.com/nc/local/city.html";
     private static Map<String, Object> map_log = new HashMap<>();
+    private static List<String> listBoardid = new ArrayList<>();
+
+    public NetEaseHouseJob() {
+        mapCatalog.put("110000", "北京");
+        init_map_log();
+        init_list_boardid();
+    }
+
+    private void init_map_log() {
+        map_log.clear();
+        map_log.put("city_id", 0);
+        map_log.put("city_id", "");
+        map_log.put("city_name", "");
+        map_log.put("city_code", "");
+        map_log.put("http_request_ok", 0);
+        map_log.put("http_request_failed", 0);
+        map_log.put("db_ok", 0);
+        map_log.put("db_failed", 0);
+    }
+
+    private void init_list_boardid() {
+        if (listBoardid != null && listBoardid.size() <= 0) {
+            listBoardid.add("house_bbs");
+            listBoardid.add("gzhouse_bbs");
+            listBoardid.add("health3_bbs");
+
+        }
+    }
 
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         try {
@@ -231,8 +242,7 @@ public class NetEaseHouseJob implements Job {
                             min_datetime = newsItem.getPtime();
                         }
 
-                        if ("house_bbs".equalsIgnoreCase(newsItem.getBoardid()) ||
-                                "gzhouse_bbs".equals(newsItem.getBoardid()) ||
+                        if (listBoardid.contains(newsItem.getBoardid()) ||
                                 "doc".equals(newsItem.getSkipType())) {
                             //构造实体
                             TNews tNews = new TNews();

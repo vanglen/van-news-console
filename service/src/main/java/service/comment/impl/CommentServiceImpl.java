@@ -26,7 +26,7 @@ public class CommentServiceImpl implements CommentService {
         return tCommentMapper.insert(tComment);
     }
 
-    public List<TComment> select4Page(int count, Date last_datetime) {
-        return tCommentExtendMapper.select4Page(last_datetime, count);
+    public List<TComment> select4Page(int to_id, int to_type, int status, Date last_datetime, int count) {
+        return tCommentExtendMapper.select4Page(to_id, to_type, status, last_datetime, count);
     }
 }
