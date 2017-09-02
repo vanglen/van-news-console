@@ -27,8 +27,10 @@ public class NewsProvider {
     public static int AddNews(TNews model) {
         int result = 0;
         if (model != null && !model.getTitle().equals("")) {
-            String strTitle = model.getTitle().replace("?", "？");
-            String STR_SQL_FIND_TITLE = "SELECT id from t_news where title ='" + strTitle + "' limit 1";
+//            String strTitle = model.getTitle().replace("?", "？");
+//            String STR_SQL_FIND_TITLE = "SELECT id from t_news where title ='" + strTitle + "' limit 1";
+            String doc_id=model.getSourceDocid();
+            String STR_SQL_FIND_TITLE = "SELECT id from t_news where source_docid ='" + doc_id + "' limit 1";
             Connection conn = new DbUtil(driverClassName, url, user, password).getConnection();
             QueryRunner queryRunner = new QueryRunner();
             try {

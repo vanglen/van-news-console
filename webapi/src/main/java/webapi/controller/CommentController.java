@@ -52,16 +52,19 @@ public class CommentController {
         ResultCommon<ResultCommentItem> resultCommon = new ResultCommon<ResultCommentItem>();
         ResultCommentItem resultCommentItem = new ResultCommentItem();
         TUser tUser = new TUser();
-        boolean is_user_whenlogin = false;
+        boolean is_login = false;
+        boolean is_user = true;
 
         //如果用户已登录，验证用户token
         if (paramCommentAdd.getUser_id() > 0) {
             tUser = userService.GetById(paramCommentAdd.getUser_id());
             String veryfy_user_token = userService.GenerateUserToken(tUser);
-            is_user_whenlogin = veryfy_user_token.equals(paramCommentAdd.getUser_token());
+            is_user = veryfy_user_token.equals(paramCommentAdd.getUser_token());
+            is_login = is_user;
         }
 
-        if (!is_user_whenlogin) {
+
+        if (!is_user) {
             resultCommon.setMsg("用户验证错误！");
         } else if (paramCommentAdd.getTo_id() <= 0 ||
                 paramCommentAdd.getContent() == null ||
@@ -74,7 +77,7 @@ public class CommentController {
             tComment.setToType(paramCommentAdd.getTo_type());
             tComment.setContent(paramCommentAdd.getContent());
             tComment.setUserId(paramCommentAdd.getUser_id());
-            if (is_user_whenlogin) {
+            if (is_login) {
                 tComment.setUserName((tUser.getNickname() == null || tUser.getNickname().length() <= 0) ? tUser.getUsername() : tUser.getNickname());
             } else {
                 tComment.setUserName("游客" + UUID.randomUUID().toString().substring(0, 4));
@@ -92,7 +95,7 @@ public class CommentController {
                 resultCommentItem.setComment_is_self(1);
                 resultCommentItem.setTo_id(tComment.getToId() == null ? 0 : tComment.getToId());
                 resultCommentItem.setTo_type(tComment.getToType() == null ? 0 : tComment.getToType());
-                if (is_user_whenlogin) {
+                if (is_login) {
                     resultCommentItem.setUser_id(tUser.getId());
                     resultCommentItem.setUser_name((tUser.getNickname() == null || tUser.getNickname().length() <= 0) ? tUser.getUsername() : tUser.getNickname());
 //                resultCommentItem.setUser_headpic(comment.getUserHeadpic());
