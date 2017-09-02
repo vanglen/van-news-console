@@ -17,6 +17,13 @@ public interface NewsAreaService {
     List<TNewsArea> ListNewsAreaUsable();
 
     /**
+     * 根据城市名称获取城市信息
+     *
+     * @return 城市信息
+     */
+    TNewsArea GetNewsAreaByName(String city_name);
+
+    /**
      * 添加城市
      *
      * @param tNewsArea

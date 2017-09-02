@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import service.user.UserService;
 
@@ -97,13 +98,15 @@ public class AccountController {
     }
 
     @ResponseBody
-    @RequestMapping("modify")
+    @RequestMapping(value = "modify",method = RequestMethod.POST)
     public ResultCommon Modify(ParamAccount paramAccount) {
-        ResultCommon<String> result = new ResultCommon<String>();
-
+        ResultCommon<ResultAccount> result = new ResultCommon<ResultAccount>();
+        ResultAccount resultAccount = null;
         //验证参数
         //验证用户token
-        if (userService.VerifyUserToken(paramAccount.getUser_id(), paramAccount.getUser_token())) {
+        if (!userService.VerifyUserToken(paramAccount.getUser_id(), paramAccount.getUser_token())) {
+            result.setMsg("用户验证失败！");
+        } else {
             TUser tUser = userService.GetById(paramAccount.getUser_id());
             tUser.setNickname(paramAccount.getNickname());
             tUser.setMobile(paramAccount.getMobile());
@@ -112,15 +115,16 @@ public class AccountController {
             tUser.setAddress(paramAccount.getAddress());
             int resultModify = userService.Modify(tUser);
             if (resultModify > 0) {
-                //失败
                 result.setCode(EnumApiResultCode.SUCCESS.getValue());
                 result.setMsg("更新成功！");
+                TUser resultUser = userService.GetById(paramAccount.getUser_id());
+                resultAccount = ConvertUser2Account(resultUser);
             } else {
                 result.setMsg("更新失败！");
             }
         }
 
-        result.setData("");
+        result.setData(resultAccount);
         return result;
     }
 

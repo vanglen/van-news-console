@@ -3,6 +3,7 @@ package webapi.controller;
 import common.util.DateUtil;
 import model.enums.EnumApiResultCode;
 import model.news.TNews;
+import model.newsarea.TNewsArea;
 import model.param.ParamTabMy;
 import model.param.ParamTabNews;
 import model.result.ResultCommon;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import service.news.NewsAreaService;
 import service.news.NewsService;
 import service.user.UserService;
 
@@ -33,6 +35,8 @@ public class TabController {
     private UserService userService;
     @Resource
     private NewsService newsService;
+    @Resource
+    private NewsAreaService newsAreaService;
     @Value("${app.url.newshost}")
     private String app_url_newshost;
     @Value("${app.url.userdefaultimg}")
@@ -104,6 +108,13 @@ public class TabController {
         if (paramTabNews.getCount() <= 0) {
             paramTabNews.setCount(20);
         }
+        //获取城市
+        if(paramTabNews.getCity_name()!=null) {
+            TNewsArea tNewsArea = newsAreaService.GetNewsAreaByName(paramTabNews.getCity_name());
+            if(tNewsArea!=null&&tNewsArea.getId()>0){
+                paramTabNews.setCity_id(tNewsArea.getId());
+            }
+        }
         if (paramTabNews.getCity_id() <= 0) {
             paramTabNews.setCity_id(399);//北京
         }
@@ -111,6 +122,7 @@ public class TabController {
         Date last_check_time = new Date(paramTabNews.getLast_news_timestamp());
 
         List<TNews> newsList = newsService.ListByCheckTime(paramTabNews.getCount(), paramTabNews.getCity_id(), last_check_time);
+
         for (TNews news : newsList) {
             ResultTabNews.ResultTabNewsItem item = newsTab.new ResultTabNewsItem();
             item.setCount_browser(news.getCountBrowser());
