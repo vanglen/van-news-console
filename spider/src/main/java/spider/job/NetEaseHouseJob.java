@@ -242,8 +242,9 @@ public class NetEaseHouseJob implements Job {
                             min_datetime = newsItem.getPtime();
                         }
 
-                        if (listBoardid.contains(newsItem.getBoardid()) ||
-                                "doc".equals(newsItem.getSkipType())) {
+                        if ((listBoardid.contains(newsItem.getBoardid()) ||
+                                "doc".equals(newsItem.getSkipType())) &&
+                                !"webview".equals(newsItem.getArticleType())) {
                             //构造实体
                             TNews tNews = new TNews();
                             tNews.setTitle(newsItem.getTitle());
@@ -262,7 +263,8 @@ public class NetEaseHouseJob implements Job {
                             tNews.setCountLike(0);
                             tNews.setCountBrowser(0);
                             tNews.setPublishTime(newsItem.getPtime());
-                            tNews.setStatus(0);
+                            tNews.setCheckTime(newsItem.getPtime());
+                            tNews.setStatus(1);
                             tNews.setSourceDocid(newsItem.getDocid());
                             tNews.setSourceUrl(newsItem.getUrl());
                             tNews.setSourceWebsite("163");
