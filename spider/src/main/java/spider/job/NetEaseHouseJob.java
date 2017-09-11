@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
  */
 public class NetEaseHouseJob implements Job {
 
-    private static Logger logger = LoggerFactory.getLogger(ToutiaoJob.class);
+    private static Logger logger = LoggerFactory.getLogger(NetEaseHouseJob.class);
 
     private static Map<String, String> mapCatalog = new HashMap<String, String>();
     private static List<TNewsArea> listCities = new ArrayList<>();
