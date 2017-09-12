@@ -9,6 +9,7 @@ import model.param.ParamTabNews;
 import model.result.ResultCommon;
 import model.result.ResultTabMy;
 import model.result.ResultTabNews;
+import model.search.SearchNews;
 import model.user.TUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -121,7 +122,14 @@ public class TabController {
 
         Date last_check_time = new Date(paramTabNews.getLast_news_timestamp());
 
-        List<TNews> newsList = newsService.ListByCheckTime(paramTabNews.getCount(), paramTabNews.getCity_id(), last_check_time);
+//        List<TNews> newsList = newsService.ListByCheckTime(paramTabNews.getCount(), paramTabNews.getCity_id(), last_check_time);
+        SearchNews searchNews=new SearchNews();
+        searchNews.setLast_datetime(last_check_time);
+        searchNews.setCount(paramTabNews.getCount());
+        searchNews.setCityId(paramTabNews.getCity_id());
+        searchNews.setType(paramTabNews.getType());
+        searchNews.setCategoryId(paramTabNews.getCatalog_id());
+        List<TNews> newsList = newsService.ListBySearchNews4Page(searchNews);
 
         for (TNews news : newsList) {
             ResultTabNews.ResultTabNewsItem item = newsTab.new ResultTabNewsItem();

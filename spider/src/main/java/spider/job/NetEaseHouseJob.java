@@ -252,7 +252,7 @@ public class NetEaseHouseJob implements Job {
                             tNews.setPic(newsItem.getImgsrc());
                             tNews.setSource(newsItem.getSource());
                             tNews.setTags("房产");
-                            tNews.setType(10);
+                            tNews.setType(0);
                             tNews.setCategoryId(0);
                             tNews.setCategoryName("房产");
                             tNews.setCityId(area.getId());

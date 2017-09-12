@@ -5,6 +5,7 @@ import dao.mapper.TNewsExtendMapper;
 import dao.mapper.TNewsMapper;
 import model.news.TNews;
 import model.news.TNewsExample;
+import model.search.SearchNews;
 import org.springframework.stereotype.Service;
 import service.news.NewsService;
 
@@ -23,6 +24,10 @@ public class NewsServiceImpl implements NewsService {
     public List<TNews> ListByCheckTime(int count, int city_id, Date last_check_time) {
 //        return tNewsExtendMapper.selectByChecktime4Page(DateUtil.getDateTime(max_check_time,"yyyy-MM-dd HH:mm:ss"), count);
         return tNewsExtendMapper.selectByChecktime4Page(last_check_time, city_id, count);
+    }
+
+    public List<TNews> ListBySearchNews4Page(SearchNews searchNews) {
+        return tNewsExtendMapper.selectBySearchNews4Page(searchNews);
     }
 
     public TNews GetById(int id) {
