@@ -110,20 +110,20 @@ public class TabController {
             paramTabNews.setCount(20);
         }
         //获取城市
-        if(paramTabNews.getCity_name()!=null) {
+        if (paramTabNews.getCity_name() != null) {
             TNewsArea tNewsArea = newsAreaService.GetNewsAreaByName(paramTabNews.getCity_name());
-            if(tNewsArea!=null&&tNewsArea.getId()>0){
+            if (tNewsArea != null && tNewsArea.getId() > 0) {
                 paramTabNews.setCity_id(tNewsArea.getId());
             }
         }
-        if (paramTabNews.getCity_id() <= 0) {
+        if (paramTabNews.getCity_id() <= 0 && paramTabNews.getType() == 0) {
             paramTabNews.setCity_id(399);//北京
         }
 
         Date last_check_time = new Date(paramTabNews.getLast_news_timestamp());
 
 //        List<TNews> newsList = newsService.ListByCheckTime(paramTabNews.getCount(), paramTabNews.getCity_id(), last_check_time);
-        SearchNews searchNews=new SearchNews();
+        SearchNews searchNews = new SearchNews();
         searchNews.setLast_datetime(last_check_time);
         searchNews.setCount(paramTabNews.getCount());
         searchNews.setCityId(paramTabNews.getCity_id());
