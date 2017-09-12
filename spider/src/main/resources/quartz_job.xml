@@ -16,7 +16,7 @@
                 <name>NetEaseHouseJobTrigger</name>
                 <job-name>NetEaseHouseJob</job-name>
                 <job-group>NetEaseHouseJobGroup</job-group>
-                <cron-expression>30 20 20 * * ?</cron-expression>
+                <cron-expression>0 0 9 * * ?</cron-expression>
             </cron>
         </trigger>
     </schedule>
